@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Figma Clone</title>
+    <style>
+        :root {
+            --primary-color: #000000;
+            --secondary-color: #ffffff;
+            --accent-color: #f0f0f0;
+            --purple-bg: #d8b4fe;
+            --light-green-bg: #f3ffbd;
+            --button-black: #000000;
+            --button-white: #ffffff;
+            --figma-red: #f24e1e;
+            --figma-green: #0acf83;
+            --figma-blue: #1abcfe;
+            --figma-purple: #a259ff;
+            --f-columns: 48;
+            --f-gutter: 16px;
+            --f-col-width: calc(100vw / var(--f-columns));
+            --f-max-content-width: 1440px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 2rem;
+            border-bottom: 1px solid #e5e5e5;
+            background-color: var(--secondary-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .left-header {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-right: 1rem;
+        }
+
+        .logo img {
+            height: 32px;
+            width: auto;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            margin-left: 1rem;
+        }
+
+        .nav-links li {
+            margin: 0 1rem;
+            position: relative;
+        }
+
+        .nav-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a::after {
+            content: "";
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z' fill='rgba(0,0,0,1)'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            margin-left: 4px;
+            transform: scale(0.6);
+            opacity: 0.6;
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 1rem;
+            text-decoration: none;
+        }
+
+        .btn-outline {
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            background-color: transparent;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            background-color: #000;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            line-height: 1;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            padding: 6rem 0 4rem 2rem;
+            background-color: #ffffff;
+            position: relative;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hero-content {
+            flex: 0 0 50%;
+            display: flex;
+            padding-bottom: 75px;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            z-index: 1;
+            padding-right: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            line-height: 0.9;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+
+        .hero-image {
+            flex: 0 0 50%;
+            position: relative;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .hero-right-image {
+            width: 100%;
+            height: auto;
+            max-width: 550px;
+            position: absolute;
+            top: -50px;
+            right: 0;
+        }
+
+        /* Editor Preview Section */
+        .editor-preview {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            margin-top: -100px;
+            margin-bottom: 4rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .editor-container {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .editor-ui-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Tabs Section */
+        .tabs-section {
+            padding: 4rem 2rem;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+
+        .tabs-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border: none;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
+        .tab-heading {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .tab-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--primary-color);
+            padding-bottom: 2px;
+            transition: border-color 0.2s;
+        }
+
+        .tab-link:hover {
+            border-color: #666;
+        }
+
+        /* Testimonial Section */
+        .css-mxb2ew {
+            margin: 0;
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        @media (min-width: 960px) {
+            .css-mxb2ew {
+                display: grid;
+                grid-template-columns: calc(var(--f-col-width) * 29) calc(var(--f-col-width) * 13);
+                gap: calc(var(--f-col-width) * 2);
+                align-items: end;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .css-mxb2ew {
+                grid-template-columns: calc(var(--f-col-width) * 28) calc(var(--f-col-width) * 12);
+                gap: calc(var(--f-col-width) * 4);
+            }
+        }
+
+        @media (min-width: 1440px) {
+            .css-mxb2ew {
+                grid-template-columns: calc(var(--f-col-width) * 29) calc(var(--f-col-width) * 11);
+            }
+        }
+
+        .css-1qlgdw4 {
+            color: #B7922E;
+            margin-bottom: 1.5rem;
+        }
+
+        .css-1dbhnvn {
+            margin: 0;
+            padding: 0;
+        }
+
+        .css-1de2cx2 {
+            margin-bottom: 2rem;
+        }
+
+        .css-1de2cx2 p {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .css-k4udfn {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+            position: absolute;
+            right: 2rem;
+            bottom: 6rem;
+        }
+
+        .css-rvp98e {
+            display: flex;
+            flex-direction: column;
+            text-align: right;
+        }
+
+        .css-cbs14c {
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            align-items: flex-end;
+            padding-bottom: 100px;
+            padding-right: 50px;
+        }
+
+        .css-github {
+            display: block;
+            font-weight: 600;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .css-diana {
+            display: block;
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .css-title {
+            display: block;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* Redesign Section */
+        .css-1bdymfz {
+            --f-bg-color: #CB9FD2;
+            --f-text-color: #000000;
+            background: var(--f-bg-color, #FFFFFF);
+            color: var(--f-text-color, #000000);
+            padding-block: 5rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @media (min-width: 960px) {
+            .css-1bdymfz {
+                padding-bottom: 0;
+                position: relative;
+            }
+        }
+
+        @media (min-width: 1440px) {
+            .css-1bdymfz {
+                padding-top: 7.5rem;
+            }
+        }
+
+        .css-1whjtwy {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .css-14196z3 {
+            flex: 1 1 50%;
+            padding-right: 2rem;
+        }
+
+        .css-1ptqf8s {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .css-18geb68 {
+            font-size: 2rem;
+            line-height: 1.3;
+            margin-bottom: 2rem;
+        }
+
+        .css-1vpmm7d {
+            flex: 1 1 45%;
+            margin-left: auto;
+        }
+
+        .css-1yxd7ui {
+            width: 100%;
+        }
+
+        .feature-content {
+            width: 100%;
+            flex: 1 1 50%;
+        }
+
+        .css-10y8asf,
+        .css-gvtxu4 {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            padding-top: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .css-1u7h6tk {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .css-5t5ouy,
+        .css-rsgv5x {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 0;
+            text-align: left;
+            width: 100%;
+        }
+
+        .css-1nitoo7 {
+            width: 24px;
+            height: 24px;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .css-1t7qdv6,
+        .css-fbemhx {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .css-w43dqe {
+            margin-top: 1rem;
+            margin-left: 2.5rem;
+        }
+
+        .css-fwo8tx {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .css-139d3n1 {
+            display: inline-flex;
+            text-decoration: none;
+            color: #000;
+            font-weight: 500;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .css-1qhfzz9 {
+            display: flex;
+            align-items: center;
+        }
+
+        .css-bni7vm {
+            margin-right: 0.5rem;
+        }
+
+        .css-8nqg63 {
+            border-bottom: 1px solid #000;
+            padding-bottom: 2px;
+        }
+
+        .css-1o2fbcf {
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .css-j94shh {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Light Green Section Styles */
+        .css-dnyh5k {
+            --f-bg-color: #E4FF97;
+            --f-text-color: #000000;
+            padding-block: 5rem;
+            background: var(--f-bg-color, #FFFFFF);
+            color: var(--f-text-color, #000000);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 1440px) {
+            .css-dnyh5k {
+                padding-block: 7.5rem;
+            }
+        }
+
+        .css-2qv4k {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .css-8rg3xf {
+            margin-bottom: 4rem;
+            max-width: 800px;
+        }
+
+        .css-5u6z8r {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 4rem;
+            position: relative;
+        }
+
+        .css-1ct1iq3 {
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            position: relative;
+            aspect-ratio: 16/9;
+            background-color: #000;
+        }
+
+        .video-container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            /* 16:9 Aspect Ratio */
+        }
+
+        .video-thumbnail {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .play-button svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .css-bxu0zy {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .css-jwe551 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .css-uubitr {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: #000;
+            color: #fff;
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 2rem;
+        }
+
+        .footer-brand {
+            grid-column: 1;
+        }
+
+        .footer-brand h2 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .social-icon:hover {
+            background-color: #444;
+        }
+
+        .footer-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-column h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #aaa;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-column a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .footer-column a:hover {
+            color: #ccc;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #333;
+        }
+
+        .cookie-settings {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .language-selector {
+            display: flex;
+            align-items: center;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .language-selector img {
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .css-bxu0zy {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .footer-brand {
+                grid-column: 1 / span 2;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="left-header">
+            <div class="logo">
+                <img src="logo.png" alt="Figma Logo">
+            </div>
+            <ul class="nav-links">
+                <li><a href="#">Products</a></li>
+                <li><a href="#">Solutions</a></li>
+                <li><a href="#">Community</a></li>
+                <li><a href="#">Resources</a></li>
+                <li><a href="#">Pricing</a></li>
+            </ul>
+        </div>
+        <div class="auth-buttons">
+            <a href="#" class="btn">Contact sales</a>
+            <a href="http://localhost" class="btn btn-outline">Log in</a>
+            <a href="http://localhost" class="btn btn-primary">Get started for free</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Think bigger.<br>Build faster.</h1>
+            <p>Figma helps design and development teams build great products, together.</p>
+            <a href="http://localhost" class="btn btn-primary">Get started for free</a>
+        </div>
+        <div class="hero-image">
+            <img src="1png.png" alt="Colorful abstract shapes" class="hero-right-image" />
+        </div>
+    </section>
+
+    <!-- Figma Editor UI Section -->
+    <section class="editor-preview">
+        <div class="editor-container">
+            <img src="2png.png" alt="Figma editor interface showing food app design" class="editor-ui-image" />
+        </div>
+    </section>
+
+    <!-- Tabs Section -->
+    <section class="tabs-section">
+        <div class="tabs-container">
+            <div class="tab-buttons">
+                <button class="tab-button active">Design</button>
+                <button class="tab-button">Build</button>
+                <button class="tab-button">Jam</button>
+                <button class="tab-button">Present</button>
+            </div>
+            <h2 class="tab-heading">Design and refine products with your team, in one shared design file.</h2>
+            <a href="#" class="tab-link">Explore Figma Design</a>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <figure class="css-mxb2ew">
+        <div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="56" fill="none" viewBox="0 0 64 56"
+                aria-hidden="true" class="css-1qlgdw4">
+                <g fill="currentColor">
+                    <path
+                        d="M29.866 0v24.286H14.79V26h.143c8.246 0 14.93 6.715 14.93 15 0 8.283-6.684 14.999-14.93 14.999C6.685 56 0 49.284 0 41q0-.215.006-.428H0V17.143C0 7.675 7.64 0 17.064 0zM64 0v24.286H48.923V26h.142c8.247 0 14.931 6.715 14.931 15 0 8.283-6.684 14.999-14.93 14.999-8.247 0-14.932-6.716-14.932-15q0-.215.006-.428h-.006V17.143C34.134 7.675 41.774 0 51.198 0z">
+                    </path>
+                </g>
+            </svg>
+            <blockquote class="css-1dbhnvn">
+                <div class="css-1de2cx2">
+                    <p>Nearly everything that designers and developers need is available in Figma.</p>
+                </div>
+            </blockquote>
+        </div>
+        <figcaption class="css-k4udfn">
+            <div class="css-rvp98e">
+                <div>
+                    <p class="css-cbs14c">
+                        <span class="css-github">GitHub</span>
+                        <span class="css-diana">Diana Mounter</span>
+                        <span class="css-title">(Head of Design)</span>
+                    </p>
+                </div>
+            </div>
+        </figcaption>
+    </figure>
+
+    <!-- Redesign Section -->
+    <section class="css-1bdymfz">
+        <div class="css-1whjtwy">
+            <div class="css-14196z3">
+                <h2 class="css-1ptqf8s">Redesign how you design.</h2>
+                <p class="css-18geb68">Explore your ideas freely and iterate quickly.</p>
+
+                <div class="feature-content">
+                    <div class="css-gvtxu4">
+                        <h3 class="css-1u7h6tk">
+                            <button type="button" aria-expanded="true" aria-controls="drawer-content-1"
+                                id="drawer-title-1" class="css-5t5ouy">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                    viewBox="0 0 24 24" aria-hidden="true" class="css-1nitoo7">
+                                    <g fill="currentColor">
+                                        <path
+                                            d="M15.2 20.8v-1.075l.76.76a3.2 3.2 0 1 0 4.525-4.525l-.76-.76H20.8a3.2 3.2 0 0 0 0-6.4h-1.075l.76-.76a3.2 3.2 0 1 0-4.525-4.525l-.76.76V3.2a3.2 3.2 0 0 0-6.4 0v1.075l-.76-.76A3.2 3.2 0 1 0 3.515 8.04l.76.76H3.2a3.2 3.2 0 0 0 0 6.4h1.075l-.76.76a3.2 3.2 0 0 0 4.525 4.525l.76-.76V20.8a3.2 3.2 0 0 0 6.4 0">
+                                        </path>
+                                    </g>
+                                </svg>
+                                <span class="css-1t7qdv6">Generate simple UI with AI</span>
+                            </button>
+                        </h3>
+                        <div id="drawer-content-1" role="region" aria-labelledby="drawer-title-1" class="css-w43dqe">
+                            <p class="css-fwo8tx">Instantly create mockups to explore a bigger option space.</p>
+                            <a class="css-139d3n1" href="#">
+                                <span class="css-1qhfzz9">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                        viewBox="0 0 24 24" aria-hidden="true" class="css-bni7vm">
+                                        <path fill="currentColor" fill-rule="evenodd"
+                                            d="M12.522 4.25 20 12l-7.478 7.75-.733-.709 6.302-6.531H4v-1.02h14.09L11.79 4.959z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="css-8nqg63">Learn more</span>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="css-10y8asf">
+                        <h3 class="css-1u7h6tk">
+                            <button type="button" aria-expanded="false" aria-controls="drawer-content-2"
+                                id="drawer-title-2" class="css-rsgv5x">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                    viewBox="0 0 24 24" aria-hidden="true" class="css-1nitoo7">
+                                    <path fill="currentColor"
+                                        d="M22.4 24H1.6V8.8H6A.4.4 0 0 0 6 8h-.4a4 4 0 1 1 0-8h12.8a4 4 0 0 1 0 8H18a.4.4 0 0 0 0 .8h4.4z">
+                                    </path>
+                                </svg>
+                                <span class="css-fbemhx">Design consistently with Auto Layout</span>
+                            </button>
+                        </h3>
+                    </div>
+                    <div class="css-10y8asf">
+                        <h3 class="css-1u7h6tk">
+                            <button type="button" aria-expanded="false" aria-controls="drawer-content-3"
+                                id="drawer-title-3" class="css-rsgv5x">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                    viewBox="0 0 24 24" aria-hidden="true" class="css-1nitoo7">
+                                    <g fill="currentColor">
+                                        <path
+                                            d="M11.937 20.21 9.749 24H4.44a4.44 4.44 0 0 1-2.312-8.231A4.4 4.4 0 0 1 0 12c0-1.599.853-2.998 2.128-3.769A4.44 4.44 0 0 1 4.44 0h5.164l2.333 4.04L14.27 0h5.29a4.44 4.44 0 0 1 2.312 8.231A4.4 4.4 0 0 1 24 12a4.4 4.4 0 0 1-2.128 3.769A4.44 4.44 0 0 1 19.56 24h-5.435z">
+                                        </path>
+                                    </g>
+                                </svg>
+                                <span class="css-fbemhx">Scale your edits instantly</span>
+                            </button>
+                        </h3>
+                    </div>
+                    <div class="css-10y8asf">
+                        <h3 class="css-1u7h6tk">
+                            <button type="button" aria-expanded="false" aria-controls="drawer-content-4"
+                                id="drawer-title-4" class="css-rsgv5x">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                    viewBox="0 0 24 24" aria-hidden="true" class="css-1nitoo7">
+                                    <g fill="currentColor">
+                                        <circle cx="5.84" cy="5.84" r="5.84" transform="matrix(0 -1 -1 0 11.68 23.6)">
+                                        </circle>
+                                        <path d="M9.04 15.44v-8.4h-6.4v8.4z"></path>
+                                        <circle cx="5.84" cy="5.84" r="5.84" transform="matrix(0 -1 -1 0 24 23.6)">
+                                        </circle>
+                                        <path d="M21.36 15.44v-8.4h-6.4v8.4z"></path>
+                                        <path d="M24 11.2C24 5.235 19.165.4 13.2.4h-2.4C4.835.4 0 5.235 0 11.2z"></path>
+                                    </g>
+                                </svg>
+                                <span class="css-fbemhx">Make prototypes with AI</span>
+                            </button>
+                        </h3>
+                    </div>
+                    <div class="css-10y8asf">
+                        <h3 class="css-1u7h6tk">
+                            <button type="button" aria-expanded="false" aria-controls="drawer-content-5"
+                                id="drawer-title-5" class="css-rsgv5x">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                    viewBox="0 0 24 24" aria-hidden="true" class="css-1nitoo7">
+                                    <g fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M24.014 24.04V12.043c0-6.629-5.373-12.003-12-12.003-6.628 0-12 5.374-12 12.003v4.055a7.867 7.867 0 1 0 15.732 0V12.12a3.696 3.696 0 1 0-7.39 0v3.977a.475.475 0 1 1-.952 0v-4.055a4.61 4.61 0 1 1 9.219 0V24.04z"
+                                            clip-rule="evenodd"></path>
+                                    </g>
+                                </svg>
+                                <span class="css-fbemhx">Embed prototypes in your presentations</span>
+                            </button>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="css-1vpmm7d">
+                <div class="css-1o2fbcf">
+                    <img class="css-j94shh" src="3.avif" alt="Calendar mobile app interface">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Light Green Section -->
+    <section class="css-dnyh5k">
+        <div class="css-2qv4k">
+            <div class="css-8rg3xf">
+                <h2 class="css-1ptqf8s">Build better products, together.</h2>
+                <p class="css-18geb68">Everything your team needs to brainstorm, design, and build.</p>
+            </div>
+            <div class="css-5u6z8r">
+                <div class="css-1ct1iq3" style="position: relative;">
+                    <div class="video-thumbnail-container"
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: pointer;">
+                        <div class="play-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+                                <polygon points="5 3 19 12 5 21 5 3" fill="white"></polygon>
+                            </svg>
+                        </div>
+                    </div>
+                    <div style="width: 100%; height: 100%; overflow: hidden;" data-vimeo-initialized="true">
+                        <iframe
+                            src="https://player.vimeo.com/video/1048971700?h=9aa067f81e&amp;title=0&amp;byline=0&amp;portrait=0&amp;playsinline=0&amp;muted=1&amp;autopause=0&amp;loop=1&amp;app_id=122963"
+                            width="426" height="240" frameborder="0"
+                            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
+                            title="WebEdit_02_EN" data-ready="true" style="width: 100%; height: 100%;"
+                            tabindex="0"></iframe>
+                    </div>
+                </div>
+            </div>
+            <div class="css-bxu0zy">
+                <div class="css-0">
+                    <h3 class="css-jwe551">Create one source of truth.</h3>
+                    <p class="css-uubitr">Everyone can collaborate seamlessly in one shared file. Designers, developers,
+                        copywriters—even external contractors and clients.</p>
+                </div>
+                <div class="css-0">
+                    <h3 class="css-jwe551">Talk. Chat. Comment.</h3>
+                    <p class="css-uubitr">Communicate via audio or chat to connect quickly within your file. Gather and
+                        keep track of feedback with comments.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h2>Figma</h2>
+                <div class="social-icons">
+                    <a href="#" class="social-icon">
+                        <svg width="16" height="16" fill="white" viewBox="0 0 24 24">
+                            <path
+                                d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+                        </svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg width="16" height="16" fill="white" viewBox="0 0 24 24">
+                            <path
+                                d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                        </svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg width="16" height="16" fill="white" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                        </svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg width="16" height="16" fill="white" viewBox="0 0 24 24">
+                            <path
+                                d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h3>Product</h3>
+                <ul>
+                    <li><a href="#">Figma Design</a></li>
+                    <li><a href="#">FigJam</a></li>
+                    <li><a href="#">Dev Mode</a></li>
+                    <li><a href="#">Figma Slides</a></li>
+                    <li><a href="#">Release notes</a></li>
+                    <li><a href="#">Downloads</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Use Cases</h3>
+                <ul>
+                    <li><a href="#">UI design</a></li>
+                    <li><a href="#">UX design</a></li>
+                    <li><a href="#">Wireframing</a></li>
+                    <li><a href="#">Diagramming</a></li>
+                    <li><a href="#">Prototyping</a></li>
+                    <li><a href="#">Brainstorming</a></li>
+                    <li><a href="#">Presentation maker</a></li>
+                    <li><a href="#">Online whiteboard</a></li>
+                    <li><a href="#">Agile</a></li>
+                    <li><a href="#">Strategic planning</a></li>
+                    <li><a href="#">Mind mapping</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Best practices</a></li>
+                    <li><a href="#">Color wheel</a></li>
+                    <li><a href="#">Colors</a></li>
+                    <li><a href="#">Color picker</a></li>
+                    <li><a href="#">Color palettes</a></li>
+                    <li><a href="#">Color palette generator</a></li>
+                    <li><a href="#">Color contrast checker</a></li>
+                    <li><a href="#">Templates</a></li>
+                    <li><a href="#">Developers</a></li>
+                    <li><a href="#">Integrations</a></li>
+                    <li><a href="#">Resource library</a></li>
+                    <li><a href="#">Reports and insights</a></li>
+                    <li><a href="#">Support</a></li>
+                    <li><a href="#">Status</a></li>
+                    <li><a href="#">Legal and privacy</a></li>
+                    <li><a href="#">Modern slavery statement</a></li>
+                    <li><a href="#">Climate disclosure statement</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Compare</h3>
+                <ul>
+                    <li><a href="#">Sketch</a></li>
+                    <li><a href="#">Adobe XD</a></li>
+                    <li><a href="#">Framer</a></li>
+                    <li><a href="#">Miro</a></li>
+                </ul>
+
+                <h3 style="margin-top: 2rem;">Company</h3>
+                <ul>
+                    <li><a href="#">About us</a></li>
+                    <li><a href="#">Events</a></li>
+                    <li><a href="#">Customers</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Newsroom</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <a href="#" class="cookie-settings">Cookie settings</a>
+            <div class="language-selector">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path
+                        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                    </path>
+                </svg>
+                English
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript to handle tab switching
+        document.addEventListener("DOMContentLoaded", function () {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabHeading = document.querySelector('.tab-heading');
+            const tabLink = document.querySelector('.tab-link');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+
+                    // Add active class to clicked button
+                    button.classList.add('active');
+
+                    // Update content based on selected tab
+                    const tabName = button.textContent.trim();
+                    let heading, btnText;
+
+                    switch (tabName) {
+                        case 'Design':
+                            heading = 'Design and refine products with your team, in one shared design file.';
+                            btnText = 'Explore Figma Design';
+                            break;
+                        case 'Build':
+                            heading = 'Build products faster with reusable components and developer handoff.';
+                            btnText = 'Explore Dev Mode';
+                            break;
+                        case 'Jam':
+                            heading = 'Brainstorm, iterate, and collaborate in real-time with your team.';
+                            btnText = 'Explore FigJam';
+                            break;
+                        case 'Present':
+                            heading = 'Create powerful presentations that bring your ideas to life.';
+                            btnText = 'Explore Figma Slides';
+                            break;
+                    }
+
+                    if (tabHeading) tabHeading.textContent = heading;
+                    if (tabLink) tabLink.textContent = btnText;
+                });
+            });
+
+            // Video player click logic
+            const thumbnailContainer = document.querySelector('.video-thumbnail-container');
+
+            if (thumbnailContainer) {
+                thumbnailContainer.addEventListener('click', function () {
+                    this.style.display = 'none';
+                    // Optionally, you might want to start playing the video
+                    const iframe = document.querySelector('iframe');
+                    if (iframe) {
+                        // Update iframe src to include autoplay
+                        const currentSrc = iframe.src;
+                        if (!currentSrc.includes('autoplay=1')) {
+                            iframe.src = currentSrc.replace('muted=1', 'muted=0') + '&autoplay=1';
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
