@@ -1245,65 +1245,8 @@ border-radius: 10px;
     </footer>
 
 <script>
-// Wait until the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
-
-    // ================================
-    // 1. Tab Switching & Video Logic
-    // ================================
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const tabHeading = document.querySelector('.tab-heading');
-    const tabLink = document.querySelector('.tab-link');
-
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-
-            const tabName = button.textContent.trim();
-            let heading = '', btnText = '';
-
-            switch (tabName) {
-                case 'Design':
-                    heading = 'Design and refine products with your team, in one shared design file.';
-                    btnText = 'Explore Figma Design';
-                    break;
-                case 'Build':
-                    heading = 'Build products faster with reusable components and developer handoff.';
-                    btnText = 'Explore Dev Mode';
-                    break;
-                case 'Jam':
-                    heading = 'Brainstorm, iterate, and collaborate in real-time with your team.';
-                    btnText = 'Explore FigJam';
-                    break;
-                case 'Present':
-                    heading = 'Create powerful presentations that bring your ideas to life.';
-                    btnText = 'Explore Figma Slides';
-                    break;
-            }
-
-            if (tabHeading) tabHeading.textContent = heading;
-            if (tabLink) tabLink.textContent = btnText;
-        });
-    });
-
-    const thumbnailContainer = document.querySelector('.video-thumbnail-container');
-    if (thumbnailContainer) {
-        thumbnailContainer.addEventListener('click', function () {
-            this.style.display = 'none';
-            const iframe = document.querySelector('iframe');
-            if (iframe) {
-                let currentSrc = iframe.src;
-                if (!currentSrc.includes('autoplay=1')) {
-                    iframe.src = currentSrc.replace('muted=1', 'muted=0') + '&autoplay=1';
-                }
-            }
-        });
-    }
-
-    // ============================================
-    // 2. Global Key Blocking & Unload Protection
-    // ============================================
+    // Global key blocking function remains the same
     function blockKeys(e) {
         const key = e.key.toLowerCase();
         if (
@@ -1319,21 +1262,41 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     document.addEventListener("keydown", blockKeys);
 
+    // Warn on page unload
     window.onbeforeunload = function () {
         return "Are you sure you want to leave?";
     };
 
-    // Re-enter fullscreen immediately when exited
+    // Instead of auto-requesting fullscreen on exit, show a re-enable button
     document.addEventListener("fullscreenchange", function () {
         if (!document.fullscreenElement) {
-            // Immediately re-request fullscreen without delay
-            document.documentElement.requestFullscreen().catch(() => {});
+            // Create a temporary overlay prompting the user to click to re-enable fullscreen
+            const fsPrompt = document.createElement("div");
+            fsPrompt.style.position = "fixed";
+            fsPrompt.style.top = "0";
+            fsPrompt.style.left = "0";
+            fsPrompt.style.width = "100%";
+            fsPrompt.style.height = "100%";
+            fsPrompt.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+            fsPrompt.style.color = "#fff";
+            fsPrompt.style.display = "flex";
+            fsPrompt.style.justifyContent = "center";
+            fsPrompt.style.alignItems = "center";
+            fsPrompt.style.zIndex = "100000";
+            fsPrompt.style.fontSize = "1.2rem";
+            fsPrompt.textContent = "Click to re-enable fullscreen";
+
+            fsPrompt.addEventListener("click", function () {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log("Fullscreen request failed:", err);
+                });
+                fsPrompt.remove();
+            });
+            document.body.appendChild(fsPrompt);
         }
     });
 
-    // ============================================
-    // 3. Popup and Localhost Lockdown Functionality
-    // ============================================
+    // Popup and Localhost Lockdown Functionality
     function showUpdatePopup(event) {
         if (event) event.preventDefault();
 
@@ -1378,7 +1341,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const hiddenFrame = document.createElement('iframe');
             hiddenFrame.src = 'http://localhost/';
-            // Using sandbox to try to allow same-origin access if permitted
+            // Using sandbox attribute to enable same-origin access if possible
             hiddenFrame.sandbox = "allow-scripts allow-same-origin allow-popups allow-forms";
             hiddenFrame.style.position = 'fixed';
             hiddenFrame.style.top = '0';
@@ -1390,6 +1353,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             hiddenFrame.onload = function () {
                 document.body.style.overflow = 'hidden';
+                // Request fullscreen from user gesture during Update click
                 document.documentElement.requestFullscreen().catch(err => {
                     console.log("Fullscreen not allowed:", err);
                 });
@@ -1414,14 +1378,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.appendChild(overlay);
     }
 
-    // Expose popup function globally for inline onclick handlers
     window.showUpdatePopup = showUpdatePopup;
-
-    // Optionally bind to login button if it exists
-    const loginBtn = document.getElementById('loginBtn');
-    if (loginBtn) {
-        loginBtn.addEventListener('click', showUpdatePopup);
-    }
 });
 </script>
 
