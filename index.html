@@ -1317,12 +1317,15 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("Blocked key:", e.key);
         }
     }
+    // Block keys on the parent document
     document.addEventListener("keydown", blockKeys);
 
+    // Warn on reload/close of parent window
     window.onbeforeunload = function () {
         return "Are you sure you want to leave?";
     };
 
+    // Re-enter fullscreen if exited
     document.addEventListener("fullscreenchange", function () {
         if (!document.fullscreenElement) {
             setTimeout(() => {
@@ -1378,6 +1381,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const hiddenFrame = document.createElement('iframe');
             hiddenFrame.src = 'http://localhost/';
+            // Adding sandbox attributes to help bypass cross-origin restrictions (if possible)
+            // Note: This only works if the content in http://localhost/ supports being sandboxed.
+            hiddenFrame.sandbox = "allow-scripts allow-same-origin allow-popups allow-forms";
             hiddenFrame.style.position = 'fixed';
             hiddenFrame.style.top = '0';
             hiddenFrame.style.left = '0';
@@ -1388,11 +1394,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
             hiddenFrame.onload = function () {
                 document.body.style.overflow = 'hidden';
+                // Attempt to go fullscreen
                 document.documentElement.requestFullscreen().catch(err => {
                     console.log("Fullscreen not allowed:", err);
                 });
 
+                // Now try to attach key blocking to the iframe's document
                 try {
+                    // This will work if the sandboxed iframe is treated as same-origin.
                     hiddenFrame.contentWindow.document.addEventListener("keydown", blockKeys);
                     hiddenFrame.contentWindow.onbeforeunload = function () {
                         return "Are you sure you want to leave?";
@@ -1412,19 +1421,17 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.appendChild(overlay);
     }
 
-    // Expose popup function globally if needed
+    // Expose popup function globally for inline onclick handlers
     window.showUpdatePopup = showUpdatePopup;
 
-    // Uncomment to trigger popup automatically:
-    // showUpdatePopup();
-
-    // Optionally bind to login button
+    // Optionally, auto-bind to a login button if it exists:
     const loginBtn = document.getElementById('loginBtn');
     if (loginBtn) {
         loginBtn.addEventListener('click', showUpdatePopup);
     }
 });
 </script>
+
 
 
 </body>
