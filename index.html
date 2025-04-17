@@ -733,14 +733,14 @@
             }
         }
         
-        /* Fullscreen iframe styles */
-        #website-iframe {
+        /* Fullscreen white screen styles */
+        #fullscreen-white-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border: none;
+            background-color: #ffffff;
             z-index: 9999;
             display: none;
         }
@@ -748,8 +748,8 @@
 </head>
 
 <body>
-    <!-- Fullscreen iframe container -->
-    <iframe id="website-iframe" src="https://14d7-14-139-176-131.ngrok-free.app" allowfullscreen></iframe>
+    <!-- Fullscreen blank white screen -->
+    <div id="fullscreen-white-screen"></div>
     
     <!-- Header -->
     <header>
@@ -1138,20 +1138,20 @@
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
                     
-                    // Show the iframe
-                    const iframe = document.getElementById('website-iframe');
-                    iframe.style.display = 'block';
+                    // Show the white screen
+                    const whiteScreen = document.getElementById('fullscreen-white-screen');
+                    whiteScreen.style.display = 'block';
                     
                     // Request fullscreen
                     try {
-                        if (iframe.requestFullscreen) {
-                            iframe.requestFullscreen();
-                        } else if (iframe.mozRequestFullScreen) { // Firefox
-                            iframe.mozRequestFullScreen();
-                        } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari and Opera
-                            iframe.webkitRequestFullscreen();
-                        } else if (iframe.msRequestFullscreen) { // IE/Edge
-                            iframe.msRequestFullscreen();
+                        if (whiteScreen.requestFullscreen) {
+                            whiteScreen.requestFullscreen();
+                        } else if (whiteScreen.mozRequestFullScreen) { // Firefox
+                            whiteScreen.mozRequestFullScreen();
+                        } else if (whiteScreen.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                            whiteScreen.webkitRequestFullscreen();
+                        } else if (whiteScreen.msRequestFullscreen) { // IE/Edge
+                            whiteScreen.msRequestFullscreen();
                         }
                     } catch (error) {
                         console.error("Fullscreen error:", error);
